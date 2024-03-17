@@ -14,6 +14,8 @@ export interface ContextProps {
     playTimer: () => void;
     finishProcessWithError: (timeFinished:number) => void;
     blockProcess: (timeBlocked:number) => void;
+    isLoadingProcesses: boolean;
+    toggleIsLoading: () => void;
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

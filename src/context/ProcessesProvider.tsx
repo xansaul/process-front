@@ -14,7 +14,8 @@ export const ProcessesProvider: FC<Props> = ({ children }) => {
     playTimer,
     pauseTimer,
     globalCounter
-      ,blockProcess
+      ,blockProcess,
+      toggleIsLoading
   } = useProcessProvider();
 
 
@@ -27,7 +28,8 @@ export const ProcessesProvider: FC<Props> = ({ children }) => {
         pauseTimer,
         playTimer,
         finishProcessWithError,
-          blockProcess
+          blockProcess,
+          toggleIsLoading
       }}
     >
       {children}

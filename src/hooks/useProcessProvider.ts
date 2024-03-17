@@ -13,6 +13,7 @@ export interface ProcessesState {
     finishedProcesses: IProcess[];
     runningProcess: IProcess | undefined;
     numberOfProcesses: number;
+    isLoadingProcesses: boolean;
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
@@ -22,6 +23,7 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     finishedProcesses: [],
     runningProcess: undefined,
     numberOfProcesses: 0,
+    isLoadingProcesses: false
 };
 
 
@@ -116,7 +118,9 @@ export const useProcessProvider = () =>{
         dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer});
     }
 
-
+    const toggleIsLoading = () =>{
+        dispatch({ type: 'Processes - toggleIsLoadingProcesses' });
+    }
 
     return {
         state,
@@ -126,6 +130,6 @@ export const useProcessProvider = () =>{
         pauseTimer,
         playTimer,
         blockProcess,
-
+        toggleIsLoading
     }
 }

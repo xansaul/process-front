@@ -20,7 +20,7 @@ export const ProcessForm: React.FC<Props> = ({ isDisable = false }) => {
           <Input
             className="mb-2 lg:w-2/12 md:w-3/12"
             placeholder="No. de procesos"
-            label={<p className="font-semibold">No. process</p>}
+            label={<p className="font-semibold text-gray-600">No. process</p>}
             labelPlacement="outside"
             type="number"
             name="noProcesses"
@@ -34,7 +34,7 @@ export const ProcessForm: React.FC<Props> = ({ isDisable = false }) => {
             type="submit"
             isDisabled={isLoading || isDisable}
           >
-            Crear
+            Create
           </Button>
         </div>
       </form>
