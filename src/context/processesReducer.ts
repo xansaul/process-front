@@ -7,10 +7,10 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: "Processes - ++timeELAPSEDTime" }
     | { type: "Processes - moveRunningProcess2Finished", payload: { timeFinished:number, resultOperation: string } }
     | { type: "Processes - addNewReadyProcess", payload: number }
-    | { type: "Processes - onProcessError" }
     | { type: "Processes - onProcessBlock", payload: number }
     | { type: 'Processes - blocked2ReadyProcess', payload: number }
-    | { type: 'Processes - ++blockedProcesses' };
+    | { type: 'Processes - ++blockedProcesses' }
+    | { type: 'Processes - toggleIsLoadingProcesses' };
 
 export const ProcessesReducer = (
   state: ProcessesState,
@@ -64,11 +64,19 @@ export const ProcessesReducer = (
     }
 
     case 'Processes - moveRunningProcess2Finished': {
-      if ( !state.runningProcess ) return {...state}
-      const newProcessFinished = { ...state.runningProcess } as  IProcess;
-      newProcessFinished.time_finished = action.payload.timeFinished;
-      newProcessFinished.is_finished = true;
-      newProcessFinished.operation = `${newProcessFinished.operation} = ${action.payload.resultOperation}`;
+      const { runningProcess } = state;
+      if (!runningProcess) return { ...state };
+
+      const newProcessFinished: IProcess = {
+        ...runningProcess,
+        time_finished: action.payload.timeFinished,
+        remaining_time: runningProcess.TEM - runningProcess.elapsdT,
+        return_time: action.payload.timeFinished - runningProcess.initial_time,
+        wait_time: action.payload.timeFinished - runningProcess.elapsdT - runningProcess.initial_time,
+        service_time: runningProcess.elapsdT,
+        is_finished: true,
+        operation: `${runningProcess.operation} = ${action.payload.resultOperation}`,
+      };
 
       return {
         ...state,
@@ -135,6 +143,15 @@ export const ProcessesReducer = (
         ...state,
         blockedProcesses: updatedBlockedProcesses
       };
+    }
+
+    case "Processes - toggleIsLoadingProcesses":
+    return {
+      ...state,
+
+      isLoadingProcesses: !state.isLoadingProcesses
+
+
     }
 
     default:

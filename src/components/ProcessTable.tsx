@@ -5,9 +5,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue
+  getKeyValue, Spinner
 } from "@nextui-org/react";
 import { IProcess } from "../interfaces/ProcessRequest";
+import {columns as columnsTable} from "../config/config-table.ts";
 
 interface Column {
   key: string;
@@ -18,45 +19,53 @@ interface Props {
   processes?: IProcess[];
   title?: string;
   className?: string;
-  columns: Column[];
+  columns?: Column[];
+  isLoading?: boolean;
 }
 
 
 
-export const ProcessTable: React.FC<Props> = ({ processes = [], title = '', className = '', columns}) => {
+export const ProcessTable: React.FC<Props> = ({
+                                                processes = [],
+                                                title = '',
+                                                className = '',
+                                                columns = columnsTable,
+                                                isLoading = false
+}) => {
 
 
   return (
     <div className={`w-full ${className}`}>
-      <h2 className="text-xl font-semibold mb-1">{title}</h2>
-      <Table aria-label="Example empty table">
+      <h2 className="text-xl font-semibold mb-2 text-blue-700">{title}</h2>
+      <Table
+          aria-label="Example empty table"
+          classNames={{
+              table: "min-h-[300px]",
+          }}
+      >
         <TableHeader>
           <TableHeader columns={columns}>
           {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
         </TableHeader>
         </TableHeader>
-        <TableBody items={processes} emptyContent="There are no processes">
+        <TableBody
+            items= {processes}
+            emptyContent={isLoading ?"":"There are no processes"}
+            isLoading={isLoading}
+            loadingContent={
+                <Spinner
+                    label="Loading Processes..."
+                    color="primary"
+                    labelColor="primary"
+                    className="font-medium"
+                />
+            }
+        >
           {(process) => (
             <TableRow key={process.id}>
               {(columnKey) => {
-                if(columnKey === 'remaining_time') {
-                  process.remaining_time = process.TEM - process.elapsdT;
-                }
-
-                if(columnKey === 'return_time') {
-                  process.return_time = process.time_finished - process.initial_time;
-                }
-
-                if(columnKey === 'wait_time') {
-                  process.wait_time = process.time_finished - process.elapsdT - process.initial_time;
-                }
-
-                if(columnKey === 'service_time') {
-                  process.service_time = process.elapsdT;
-                }
                 return (<TableCell>{getKeyValue(process, columnKey)}</TableCell>)
               }
-
               }
             </TableRow>
           )}
