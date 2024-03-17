@@ -36,12 +36,15 @@ export const ProcessTable: React.FC<Props> = ({
 
   return (
     <div className={`w-full ${className}`}>
-      <h2 className="text-xl font-semibold mb-2 text-blue-700">{title}</h2>
+      <h2 className="text-xl font-semibold mb-2 text-slate-600">{title}</h2>
       <Table
+          isStriped
+          radius={"sm"}
           aria-label="Example empty table"
           classNames={{
-              table: processes.length>0 ? "h-auto" : "min-h-[300px]",
+              wrapper: className="min-h-[300px]"
           }}
+
       >
         <TableHeader>
           <TableHeader columns={columns}>
