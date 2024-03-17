@@ -104,7 +104,7 @@ export const useProcessProvider = () =>{
     }
 
     const setProcesses = (processes: IProcess[]) => {
-
+        console.log(processes)
         dispatch({type:"Processes - setProcesses", payload: processes});
         dispatch({type:'Processes - setNewRunningProcess', payload: globalCounter.timer});
 
