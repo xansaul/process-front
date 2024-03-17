@@ -40,7 +40,7 @@ export const ProcessTable: React.FC<Props> = ({
       <Table
           aria-label="Example empty table"
           classNames={{
-              table: "min-h-[300px]",
+              table: processes.length>0 ? "h-auto" : "min-h-[300px]",
           }}
       >
         <TableHeader>
