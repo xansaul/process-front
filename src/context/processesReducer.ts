@@ -8,7 +8,7 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: "Processes - moveRunningProcess2Finished", payload: { timeFinished:number, resultOperation: string } }
     | { type: "Processes - addNewReadyProcess", payload: number }
     | { type: "Processes - --time_remainingRunningProcess" }
-    | { type: "Processes - onProcessBlock", payload: number }
+    | { type: "Processes - onProcessBlock" }
     | { type: 'Processes - blocked2ReadyProcess', payload: number }
     | { type: 'Processes - ++blockedProcesses' }
     | { type: 'Processes - toggleIsLoadingProcesses' };
@@ -38,11 +38,10 @@ export const ProcessesReducer = (
       const [newRunningProcess, ...remainingProcesses] = state.readyProcesses;
       if ( !newRunningProcess ) return { ...state };
 
-      if ( !newRunningProcess.first_adding_in_running ){
+      if ( !newRunningProcess.addedToRunningProcessForFirstTime ){
         newRunningProcess.response_time = action.payload;
+        newRunningProcess.addedToRunningProcessForFirstTime = true;
       }
-
-      newRunningProcess.first_adding_in_running = true;
 
       return {
         ...state,
@@ -92,11 +91,10 @@ export const ProcessesReducer = (
 
       if (!newReadyProcess) return {...state};
 
-      if(!newReadyProcess.first_adding_in_ready) {
+      if(!newReadyProcess.addedToReadyForFirstTime) {
         newReadyProcess.initial_time = action.payload;
+        newReadyProcess.addedToReadyForFirstTime = true;
       }
-
-      newReadyProcess.first_adding_in_ready = false;
 
       const readyProcesses = [...state.readyProcesses, newReadyProcess ]
       return {
@@ -111,7 +109,6 @@ export const ProcessesReducer = (
       if ( !state.runningProcess ) return {...state};
       const newBlockedProcess = { ...state.runningProcess } as  IProcess;
       const blockedProcesses = [...state.blockedProcesses, newBlockedProcess];
-      newBlockedProcess.time_blocked = action.payload;
       return {
         ...state,
         runningProcess: undefined,
@@ -119,8 +116,12 @@ export const ProcessesReducer = (
       }
     }
     case 'Processes - blocked2ReadyProcess': {
-      const blockedProcess = state.blockedProcesses.find(process => process.id ===  action.payload);
-      const updatedBlockedProcesses = state.blockedProcesses.filter(process => process.id !==  action.payload);
+      const blockedProcess = state.blockedProcesses.find(
+          process => process.id ===  action.payload
+      );
+      const updatedBlockedProcesses = state.blockedProcesses.filter(
+          process => process.id !==  action.payload
+      );
 
       blockedProcess!.time_blocked = 0;
       blockedProcess!.remaining_time_blocked = 0;
@@ -148,10 +149,7 @@ export const ProcessesReducer = (
     case "Processes - toggleIsLoadingProcesses":
     return {
       ...state,
-
       isLoadingProcesses: !state.isLoadingProcesses
-
-
     }
 
     case "Processes - --time_remainingRunningProcess":{

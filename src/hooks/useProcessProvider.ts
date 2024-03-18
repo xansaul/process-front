@@ -111,8 +111,8 @@ export const useProcessProvider = () =>{
 
         return;
     }
-    const blockProcess = (timeBlocked:number) => {
-        dispatch({ type:'Processes - onProcessBlock', payload: timeBlocked });
+    const blockProcess = () => {
+        dispatch({ type:'Processes - onProcessBlock' });
     }
 
     const toggleIsLoading = () =>{

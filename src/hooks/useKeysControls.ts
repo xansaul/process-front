@@ -24,7 +24,7 @@ export const useKeysControls = () => {
                 }
                 case 'e':{
                     if ( globalCounter.is_paused ) return ;
-                    return blockProcess(globalCounter.timer);
+                    return blockProcess();
                 }
             }
 
