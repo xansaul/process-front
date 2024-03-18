@@ -10,6 +10,7 @@ import {
 import { IProcess } from "../interfaces/ProcessRequest";
 import {columns as columnsTable} from "../config/config-table.ts";
 import 'animate.css';
+import {SlotsToClasses, TableSlots} from "@nextui-org/theme";
 interface Column {
   key: string;
   label: string;
@@ -21,6 +22,8 @@ interface Props {
   className?: string;
   columns?: Column[];
   isLoading?: boolean;
+  classNames?: SlotsToClasses<TableSlots>;
+  isHeaderSticky?: boolean;
 }
 
 
@@ -30,19 +33,24 @@ export const ProcessTable: React.FC<Props> = ({
                                                 title = '',
                                                 className = '',
                                                 columns = columnsTable,
-                                                isLoading = false
+                                                isLoading = false,
+                                                  classNames,
+                                                  isHeaderSticky = false
 }) => {
 
 
   return (
-    <div className={`w-full ${className}`}>
+    <div>
       <h2 className="text-xl font-semibold mb-2 text-slate-600">{title}</h2>
       <Table
+          isHeaderSticky={isHeaderSticky}
+          className={`table-scroll ${className}`}
           isStriped
           radius={"sm"}
           aria-label="Example empty table"
           classNames={{
-              wrapper: className="min-h-[300px]"
+              wrapper: className="min-h-[300px]",
+              ...classNames,
           }}
 
       >

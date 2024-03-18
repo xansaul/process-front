@@ -28,31 +28,42 @@ export const ProcessesView = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-12 md:gap-4 gap-3 w-11/12 m-auto" >
 
-        <ProcessTable
-            processes={readyProcesses}
-            title="Ready Processes"
-            columns={columnsReady}
-            isLoading={isLoadingProcesses}
-            className={"md:col-span-4"}
-        />
-        <ProcessTable
-            title="Running Process"
-            processes={ runningProcess? [runningProcess]:[] }
-            columns={columnsRunning}
-            className={"md:col-span-8"}
-        />
-        <ProcessTable
-            title="Blocked Processes"
-            processes={ blockedProcesses }
-            columns={columnsWithBlocked}
-            className={"md:col-span-4"}
-        />
-        <ProcessTable
-            title="Finished Processes"
-            processes={ finishedProcesses }
-            columns={columns}
-            className={"md:col-span-8"}
-        />
+          <div className="md:col-span-4">
+            <ProcessTable
+                processes={readyProcesses}
+                title="Ready Processes"
+                columns={columnsReady}
+                isLoading={isLoadingProcesses}
+            />
+          </div>
+
+          <div className="md:col-span-8">
+            <ProcessTable
+                title="Running Process"
+                processes={ runningProcess? [runningProcess]:[] }
+                columns={columnsRunning}
+            />
+          </div>
+
+          <div className="md:col-span-4">
+            <ProcessTable
+                title="Blocked Processes"
+                processes={ blockedProcesses }
+                columns={columnsWithBlocked}
+            />
+          </div>
+
+          <div className="md:col-span-8">
+            <ProcessTable
+                title="Finished Processes"
+                processes={ finishedProcesses }
+                columns={columns}
+                classNames={{
+                    base: "max-h-[300px]",
+                }}
+                isHeaderSticky
+            />
+          </div>
 
       </div>
         <div className="w-11/12 m-auto mt-4">
