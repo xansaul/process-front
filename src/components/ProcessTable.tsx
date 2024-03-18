@@ -9,7 +9,7 @@ import {
 } from "@nextui-org/react";
 import { IProcess } from "../interfaces/ProcessRequest";
 import {columns as columnsTable} from "../config/config-table.ts";
-
+import 'animate.css';
 interface Column {
   key: string;
   label: string;
@@ -65,7 +65,7 @@ export const ProcessTable: React.FC<Props> = ({
             }
         >
           {(process) => (
-            <TableRow key={process.id}>
+            <TableRow key={process.id} className="animate__animated animate__fadeInUp animate__faster">
                   {(columnKey) => {
                     return (<TableCell>{getKeyValue(process, columnKey)}</TableCell>)
                   }
