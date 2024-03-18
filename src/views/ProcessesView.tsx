@@ -26,28 +26,32 @@ export const ProcessesView = () => {
       <h2 className="text-center mb-4 font-medium text-2xl pt-1">Global Counter: {globalCounter.timer}</h2>
       <h2 className="text-center mb-4 font-medium text-xl">New Processes: {processes.length}</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-3 w-11/12 m-auto" >
+      <div className="grid grid-cols-1 md:grid-cols-12 md:gap-4 gap-3 w-11/12 m-auto" >
 
         <ProcessTable
             processes={readyProcesses}
             title="Ready Processes"
             columns={columnsReady}
             isLoading={isLoadingProcesses}
+            className={"md:col-span-4"}
         />
         <ProcessTable
             title="Running Process"
             processes={ runningProcess? [runningProcess]:[] }
             columns={columnsRunning}
+            className={"md:col-span-8"}
         />
         <ProcessTable
             title="Blocked Processes"
             processes={ blockedProcesses }
             columns={columnsWithBlocked}
+            className={"md:col-span-4"}
         />
         <ProcessTable
             title="Finished Processes"
             processes={ finishedProcesses }
             columns={columns}
+            className={"md:col-span-8"}
         />
 
       </div>

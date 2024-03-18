@@ -6,7 +6,7 @@ export interface IProcess {
     is_finished: boolean;
     operation:   string;
     time_finished: number;
-    remaining_time: number;
+    remaining_time_running: number;
     time_blocked: number;
     remaining_time_blocked: number;
     initial_time: number;

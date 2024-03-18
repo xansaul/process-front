@@ -18,7 +18,7 @@ export const columnsRunning = [
         label: "ELAPSED TIME",
     },
     {
-        key: "remaining_time",
+        key: "remaining_time_running",
         label: "REMAINING TIME"
     }
 ];
