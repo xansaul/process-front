@@ -5,7 +5,6 @@ import {evaluate} from "mathjs";
 import {IProcess} from "../interfaces/ProcessRequest.ts";
 import {envs} from "../config";
 
-
 export interface ProcessesState {
     processes: IProcess[];
     blockedProcesses: IProcess[];
@@ -14,6 +13,7 @@ export interface ProcessesState {
     runningProcess: IProcess | undefined;
     numberOfProcesses: number;
     isLoadingProcesses: boolean;
+    processesInMemory: number;
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
@@ -23,9 +23,9 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     finishedProcesses: [],
     runningProcess: undefined,
     numberOfProcesses: 0,
-    isLoadingProcesses: false
+    isLoadingProcesses: false,
+    processesInMemory: 0
 };
-
 
 export const useProcessProvider = () =>{
     const [state, dispatch] = useReducer(
@@ -33,10 +33,7 @@ export const useProcessProvider = () =>{
         PROCESSES_INITIAL_STATE
     );
 
-
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer();
-
-
 
     useEffect(() => {
 
@@ -51,9 +48,9 @@ export const useProcessProvider = () =>{
     useEffect(()=>{
 
         dispatch({ type: 'Processes - ++timeELAPSEDTimeRunningProcess' });
-        dispatch({type: 'Processes - --time_remainingRunningProcess'})
-    },[ globalCounter.timer ]);
+        dispatch({type: 'Processes - --time_remainingRunningProcess'});
 
+    },[ globalCounter.timer ]);
 
     useEffect(()=>{
 
@@ -68,7 +65,6 @@ export const useProcessProvider = () =>{
                     resultOperation: result
                 }
             });
-            dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer });
         }
 
     },[state.runningProcess?.elapsdT]);
@@ -84,9 +80,11 @@ export const useProcessProvider = () =>{
     }, [globalCounter.timer]);
 
     useEffect(() => {
-        if ( !state.runningProcess ) return;
+        if ( !(state.processesInMemory < 4) ) return;
 
-    }, [globalCounter.timer]);
+        dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
+
+    }, [state.processesInMemory]);
 
     useEffect(() => {
         if ( !state.runningProcess ){
@@ -95,6 +93,7 @@ export const useProcessProvider = () =>{
     }, [state.readyProcesses.length, state.runningProcess ]);
 
     const finishProcessWithError = (timeFinished:number) => {
+        if ( !state.runningProcess ) return;
 
         dispatch({
             type: 'Processes - moveRunningProcess2Finished',
@@ -103,8 +102,6 @@ export const useProcessProvider = () =>{
                 resultOperation: "error"
             }
         });
-        dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer });
-
     }
 
     const setProcesses = (processes: IProcess[]) => {
@@ -114,7 +111,6 @@ export const useProcessProvider = () =>{
 
         return;
     }
-
     const blockProcess = (timeBlocked:number) => {
         dispatch({ type:'Processes - onProcessBlock', payload: timeBlocked });
     }

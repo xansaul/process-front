@@ -28,7 +28,8 @@ export const ProcessesReducer = (
         ...state,
         readyProcesses,
         processes,
-        numberOfProcesses: action.payload.length
+        numberOfProcesses: action.payload.length,
+        processesInMemory: 4
       };
     }
 
@@ -77,10 +78,12 @@ export const ProcessesReducer = (
         operation: `${runningProcess.operation} = ${action.payload.resultOperation}`,
       };
 
+
       return {
         ...state,
         runningProcess: undefined,
         finishedProcesses: [...state.finishedProcesses, newProcessFinished],
+        processesInMemory: state.processesInMemory - 1
       };
     }
 
@@ -99,7 +102,8 @@ export const ProcessesReducer = (
       return {
         ...state,
         readyProcesses,
-        processes
+        processes,
+        processesInMemory: state.processesInMemory + 1
       }
     }
 
