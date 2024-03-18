@@ -13,7 +13,7 @@ export interface ContextProps {
     pauseTimer: () => void;
     playTimer: () => void;
     finishProcessWithError: (timeFinished:number) => void;
-    blockProcess: (timeBlocked:number) => void;
+    blockProcess: () => void;
     isLoadingProcesses: boolean;
     toggleIsLoading: () => void;
 }
