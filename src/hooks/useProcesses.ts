@@ -3,23 +3,32 @@ import { ProcessesContext } from "../context";
 import {envs} from "../config";
 import { IProcess } from "../interfaces/ProcessRequest";
 import { useFetch, useForm } from "./";
+import {isInteger, isNaN} from "mathjs";
 
-const initialData = { noProcesses:0 }
+const initialData = { noProcesses: '0' }
 export const useProcesses = () => {
 
     const { setProcesses, toggleIsLoading  } = useContext(ProcessesContext);
     const { isLoading, get } = useFetch<IProcess[]>();
-    const { handleInputChange, dataForm } = useForm<{ noProcesses: number }>({
+    const { handleInputChange, dataForm } = useForm<{ noProcesses: string }>({
         initialData
     })
+    const validateInput = (input: string): boolean => {
+
+        const numberInput = Number(input);
+        if (isNaN(numberInput)) return false;
+        if (!isInteger(numberInput)) return false;
+        if (numberInput === 0 || numberInput < 0) return false;
+        if (numberInput > 20) return false;
+
+        return true;
+    };
 
     const fetchProcesses = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
+
+        if (!validateInput(dataForm.noProcesses)) return;
         toggleIsLoading();
-        if ( dataForm.noProcesses === 0 || dataForm.noProcesses < 0) return;
-
-        if ( dataForm.noProcesses > 20 ) return;
-
         const data = await get(`${envs.API_URL}?noProcesses=${ dataForm.noProcesses }`);
 
         if ( data === null ){

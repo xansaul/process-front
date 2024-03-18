@@ -1,5 +1,5 @@
 export interface TimerState {
     timer: number;
     initTimer: boolean;
-    paused: boolean;
+    is_paused: boolean;
 }

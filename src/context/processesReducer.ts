@@ -4,9 +4,10 @@ import {ProcessesState} from "../hooks/useProcessProvider.ts";
 
 type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess[] }
     | { type: "Processes - setNewRunningProcess",payload: number }
-    | { type: "Processes - ++timeELAPSEDTime" }
+    | { type: "Processes - ++timeELAPSEDTimeRunningProcess" }
     | { type: "Processes - moveRunningProcess2Finished", payload: { timeFinished:number, resultOperation: string } }
     | { type: "Processes - addNewReadyProcess", payload: number }
+    | { type: "Processes - --time_remainingRunningProcess" }
     | { type: "Processes - onProcessBlock", payload: number }
     | { type: 'Processes - blocked2ReadyProcess', payload: number }
     | { type: 'Processes - ++blockedProcesses' }
@@ -34,7 +35,6 @@ export const ProcessesReducer = (
     case 'Processes - setNewRunningProcess': {
 
       const [newRunningProcess, ...remainingProcesses] = state.readyProcesses;
-
       if ( !newRunningProcess ) return { ...state };
 
       if ( !newRunningProcess.first_adding_in_running ){
@@ -50,7 +50,7 @@ export const ProcessesReducer = (
       }
     }
 
-    case 'Processes - ++timeELAPSEDTime':{
+    case 'Processes - ++timeELAPSEDTimeRunningProcess':{
       if ( !state.runningProcess ) return { ...state };
       const { elapsdT, ...rest } = state.runningProcess!;
       return{
@@ -70,7 +70,6 @@ export const ProcessesReducer = (
       const newProcessFinished: IProcess = {
         ...runningProcess,
         time_finished: action.payload.timeFinished,
-        remaining_time: runningProcess.TEM - runningProcess.elapsdT,
         return_time: action.payload.timeFinished - runningProcess.initial_time,
         wait_time: action.payload.timeFinished - runningProcess.elapsdT - runningProcess.initial_time,
         service_time: runningProcess.elapsdT,
@@ -86,9 +85,6 @@ export const ProcessesReducer = (
     }
 
     case 'Processes - addNewReadyProcess': {
-      if ( !state.runningProcess ) return {...state};
-      if ( state.readyProcesses.length === 0 ) return {...state};
-
       const [ newReadyProcess, ...processes ] = state.processes
 
       if (!newReadyProcess) return {...state};
@@ -152,6 +148,20 @@ export const ProcessesReducer = (
       isLoadingProcesses: !state.isLoadingProcesses
 
 
+    }
+
+    case "Processes - --time_remainingRunningProcess":{
+      if ( !state.runningProcess ) return {...state};
+
+      const { runningProcess } = state;
+      const updatedRunningProcess = {...runningProcess};
+
+      updatedRunningProcess.remaining_time_running = updatedRunningProcess.remaining_time_running - 1;
+
+      return  {
+        ...state,
+        runningProcess: updatedRunningProcess
+      }
     }
 
     default:

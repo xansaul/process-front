@@ -5,11 +5,11 @@ export const useTimer = (): [TimerState, () => void, () => void, () => void] => 
   const [timerObj, setTimerObj] = useState<TimerState>({
     timer: 0,
     initTimer: false,
-    paused: false,
+    is_paused: false,
   });
 
   useEffect(() => {
-    if (!timerObj.initTimer || timerObj.paused) return;
+    if (!timerObj.initTimer || timerObj.is_paused) return;
 
     const intervalId = setInterval(() => {
       setTimerObj((prev) => ({
@@ -21,7 +21,7 @@ export const useTimer = (): [TimerState, () => void, () => void, () => void] => 
     return () => {
       clearInterval(intervalId);
     };
-  }, [timerObj.initTimer, timerObj.paused]);
+  }, [timerObj.initTimer, timerObj.is_paused]);
 
   const initTimer = () => {
     setTimerObj((prev) => ({
@@ -33,14 +33,14 @@ export const useTimer = (): [TimerState, () => void, () => void, () => void] => 
   const pauseTimer = () => {
     setTimerObj((prev) => ({
       ...prev,
-      paused: true,
+      is_paused: true,
     }));
   };
 
   const playTimer = () => {
     setTimerObj((prev) => ({
       ...prev,
-      paused: false,
+      is_paused: false,
     }));
   };
 

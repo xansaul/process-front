@@ -4,7 +4,7 @@ import {ProcessesContext} from "../context";
 
 export const useKeysControls = () => {
 
-    const { pauseTimer, playTimer, finishProcessWithError, globalCounter, blockProcess } = useContext(ProcessesContext);
+    const { pauseTimer, playTimer, finishProcessWithError, globalCounter, blockProcess, } = useContext(ProcessesContext);
 
     useEffect(() => {
 
@@ -15,12 +15,15 @@ export const useKeysControls = () => {
                     return pauseTimer();
                 }
                 case 'c':{
+
                     return playTimer();
                 }
                 case 'w': {
+                    if ( globalCounter.is_paused ) return ;
                     return finishProcessWithError(globalCounter.timer);
                 }
                 case 'e':{
+                    if ( globalCounter.is_paused ) return ;
                     return blockProcess(globalCounter.timer);
                 }
             }
@@ -35,6 +38,6 @@ export const useKeysControls = () => {
             document.removeEventListener("keydown", handleKey);
         };
 
-    }, [globalCounter.timer]);
+    }, [globalCounter.timer, globalCounter.is_paused]);
 
 }

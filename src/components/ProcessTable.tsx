@@ -66,9 +66,9 @@ export const ProcessTable: React.FC<Props> = ({
         >
           {(process) => (
             <TableRow key={process.id}>
-              {(columnKey) => {
-                return (<TableCell>{getKeyValue(process, columnKey)}</TableCell>)
-              }
+                  {(columnKey) => {
+                    return (<TableCell>{getKeyValue(process, columnKey)}</TableCell>)
+                  }
               }
             </TableRow>
           )}

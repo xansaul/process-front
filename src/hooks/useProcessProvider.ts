@@ -36,6 +36,8 @@ export const useProcessProvider = () =>{
 
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer();
 
+
+
     useEffect(() => {
 
         if (state.numberOfProcesses === state.finishedProcesses.length && !state.runningProcess ) {
@@ -48,8 +50,8 @@ export const useProcessProvider = () =>{
 
     useEffect(()=>{
 
-        dispatch({ type: 'Processes - ++timeELAPSEDTime' });
-
+        dispatch({ type: 'Processes - ++timeELAPSEDTimeRunningProcess' });
+        dispatch({type: 'Processes - --time_remainingRunningProcess'})
     },[ globalCounter.timer ]);
 
 
@@ -66,7 +68,6 @@ export const useProcessProvider = () =>{
                     resultOperation: result
                 }
             });
-            dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer});
             dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer });
         }
 
@@ -77,17 +78,21 @@ export const useProcessProvider = () =>{
         dispatch({ type: 'Processes - ++blockedProcesses' });
         state.blockedProcesses.forEach(process => {
             if (process.remaining_time_blocked === envs.SECONDS_BLOCKED_PROCESS) {
-
                 dispatch({ type: 'Processes - blocked2ReadyProcess', payload: process.id });
             }
         });
     }, [globalCounter.timer]);
 
     useEffect(() => {
+        if ( !state.runningProcess ) return;
+
+    }, [globalCounter.timer]);
+
+    useEffect(() => {
         if ( !state.runningProcess ){
             dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer });
         }
-    }, [globalCounter.timer, state.readyProcesses]);
+    }, [state.readyProcesses.length, state.runningProcess ]);
 
     const finishProcessWithError = (timeFinished:number) => {
 
@@ -98,16 +103,13 @@ export const useProcessProvider = () =>{
                 resultOperation: "error"
             }
         });
-        dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer});
         dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer });
 
     }
 
     const setProcesses = (processes: IProcess[]) => {
-        console.log(processes)
-        dispatch({type:"Processes - setProcesses", payload: processes});
-        dispatch({type:'Processes - setNewRunningProcess', payload: globalCounter.timer});
 
+        dispatch({type:"Processes - setProcesses", payload: processes});
         initGlobalCounter();
 
         return;
@@ -115,7 +117,6 @@ export const useProcessProvider = () =>{
 
     const blockProcess = (timeBlocked:number) => {
         dispatch({ type:'Processes - onProcessBlock', payload: timeBlocked });
-        dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer});
     }
 
     const toggleIsLoading = () =>{
