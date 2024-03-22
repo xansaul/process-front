@@ -1,19 +1,18 @@
-
 export interface IProcess {
-    TEM:         number;
-    elapsdT:     number;
-    id:          number;
-    is_finished: boolean;
-    operation:   string;
-    time_finished: number;
-    remaining_time_running: number;
-    time_blocked: number;
-    remaining_time_blocked: number;
-    initial_time: number;
-    addedToReadyForFirstTime: boolean;
-    response_time: number;
+    TEM:                               number;
+    addedToReadyForFirstTime:          boolean;
     addedToRunningProcessForFirstTime: boolean;
-    return_time: number;
-    wait_time: number;
-    service_time: number;
+    elapsdT:                           number;
+    id:                                number;
+    initial_time:                      number;
+    is_finished:                       boolean;
+    operation:                         string;
+    remaining_time_blocked:            number;
+    remaining_time_running:            number;
+    response_time:                     number;
+    return_time:                       number;
+    service_time:                      number;
+    time_blocked:                      number;
+    time_finished:                     number;
+    wait_time:                         number;
 }
