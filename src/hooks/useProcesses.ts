@@ -19,7 +19,7 @@ export const useProcesses = () => {
         if (isNaN(numberInput)) return false;
         if (!isInteger(numberInput)) return false;
         if (numberInput === 0 || numberInput < 0) return false;
-        if (numberInput > 20) return false;
+        if (numberInput > envs.MAX_NUMBER_OF_PROCESSES_TO_REQUEST) return false;
 
         return true;
     };
