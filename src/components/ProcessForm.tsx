@@ -12,13 +12,13 @@ export const ProcessForm: React.FC<Props> = ({ isDisable = false }) => {
         noProcesses,
         isLoading,
     } = useProcesses();
-    
+
   return (
     <div className="w-full">
       <form>
-        <div className="flex flex-col md:pl-6 md:pt-8 p-4 w-full">
+        <div className="flex flex-col w-full">
           <Input
-            className="mb-2 lg:w-2/12 md:w-3/12"
+            className="mb-2 md:w-3/12"
             placeholder="No. de procesos"
             label={<p className="font-semibold text-gray-600">No. process</p>}
             labelPlacement="outside"
