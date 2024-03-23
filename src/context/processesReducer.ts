@@ -12,6 +12,7 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: 'Processes - blocked2ReadyProcess', payload: number }
     | { type: 'Processes - ++blockedProcesses' }
     | { type: 'Processes - toggleIsLoadingProcesses' }
+    | { type: 'Processes - calcWaitAndServiceTime', payload: number }
     | { type: 'Processes - onFetchNewProcess', payload: IProcess };
 
 export const ProcessesReducer = (
@@ -172,6 +173,61 @@ export const ProcessesReducer = (
         ...state,
         processes: [...state.processes, action.payload],
         numberOfProcesses: state.numberOfProcesses + 1
+      }
+    }
+
+    case "Processes - calcWaitAndServiceTime":{
+
+      const updatedProcesses = state.processes.map(process => {
+        const service_time = process.elapsdT;
+
+        return {
+          ...process,
+          service_time
+        };
+      });
+
+      const updatedBlockedProcesses = state.blockedProcesses.map(process => {
+        const wait_time = action.payload - process.elapsdT - process.initial_time;
+        const service_time = process.elapsdT;
+
+        return {
+          ...process,
+          wait_time,
+          service_time
+        };
+      });
+
+      const updatedReadyProcesses = state.readyProcesses.map(process => {
+        const wait_time = action.payload - process.elapsdT - process.initial_time;
+        const service_time = process.elapsdT;
+
+        return {
+          ...process,
+          wait_time,
+          service_time
+        };
+      });
+
+      let runningProcessUpdated;
+
+
+      if ( state.runningProcess ){
+        const {  ...runningProcess } = state.runningProcess;
+        runningProcess.wait_time = action.payload - runningProcess.elapsdT - runningProcess.initial_time;
+        runningProcess.service_time = runningProcess.elapsdT
+        runningProcessUpdated = runningProcess;
+      }else{
+        runningProcessUpdated = state.runningProcess;
+      }
+
+
+      return  {
+        ...state,
+        runningProcess: runningProcessUpdated,
+        blockedProcesses: updatedBlockedProcesses,
+        readyProcesses:   updatedReadyProcesses,
+        processes: updatedProcesses,
       }
     }
 

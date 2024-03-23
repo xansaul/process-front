@@ -130,6 +130,10 @@ export const useProcessProvider = () =>{
         dispatch({ type:'Processes - onFetchNewProcess', payload: newProcess[0] });
     }
 
+    const calcBcpTable = () => {
+        dispatch({ type: 'Processes - calcWaitAndServiceTime', payload: globalCounter.timer });
+    }
+
     return {
         state,
         setProcesses,
@@ -143,6 +147,7 @@ export const useProcessProvider = () =>{
         onOpen,
         onOpenChange,
         onClose,
-        fetchNewProcess
+        fetchNewProcess,
+        calcBcpTable
     }
 }

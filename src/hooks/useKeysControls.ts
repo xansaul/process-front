@@ -13,7 +13,8 @@ export const useKeysControls = () => {
         onOpen,
         onClose,
         fetchNewProcess,
-        processesInMemory
+        processesInMemory,
+        calcBcpTable
     } = useContext(ProcessesContext);
 
     useEffect(() => {
@@ -39,6 +40,7 @@ export const useKeysControls = () => {
                 }
                 case 'b': {
                     pauseTimer();
+                    calcBcpTable();
                     return onOpen();
                 }
                 case 'n': {
