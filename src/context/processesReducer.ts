@@ -170,7 +170,8 @@ export const ProcessesReducer = (
     case "Processes - onFetchNewProcess":{
       return {
         ...state,
-        processes: [...state.processes, action.payload]
+        processes: [...state.processes, action.payload],
+        numberOfProcesses: state.numberOfProcesses + 1
       }
     }
 

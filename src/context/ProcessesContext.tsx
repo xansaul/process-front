@@ -21,6 +21,7 @@ export interface ContextProps {
     onOpenChange: () => void;
     onClose: () => void;
     fetchNewProcess: () => Promise<void>;
+    processesInMemory: number;
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

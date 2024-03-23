@@ -3,6 +3,7 @@ import {useContext} from "react";
 import {ProcessesContext} from "../context";
 import {ProcessTable} from "./ProcessTable.tsx";
 
+
 export const ModalBCP = () => {
     const { isOpen, onOpenChange, } = useContext(ProcessesContext);
     return (
@@ -12,7 +13,11 @@ export const ModalBCP = () => {
                     <>
                         <ModalHeader className="flex flex-col gap-1">Table BCP</ModalHeader>
                         <ModalBody>
-                            <ProcessTable />
+                            <ProcessTable
+                                classNames={{
+                                base: "max-h-[500px]",
+                                }}
+                            />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="light" onPress={onClose}>

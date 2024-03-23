@@ -30,8 +30,8 @@ export const ProcessesView = () => {
                 <ActionKeysList />
             </div>
 
-            <h2 className="text-center mb-4 font-medium text-2xl pt-1">Global Counter: {globalCounter.timer}</h2>
-            <h2 className="text-center mb-4 font-medium text-xl">New Processes: {processes.length}</h2>
+            <h2 className="text-center mb-4 font-bold text-2xl pt-1">Global Counter: {globalCounter.timer}</h2>
+            <h2 className="text-center mb-4 font-bold text-xl">New Processes: {processes.length}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-12 md:gap-4 gap-3 w-11/12 m-auto">
 

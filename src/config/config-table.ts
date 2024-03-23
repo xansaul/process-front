@@ -4,6 +4,7 @@ export const columnsRunning = [
     {
         key: "id",
         label: "ID",
+        className: "overflow-hidden w-2"
     },
     {
         key: "TEM",

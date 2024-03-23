@@ -12,7 +12,8 @@ export const useKeysControls = () => {
         blockProcess,
         onOpen,
         onClose,
-        fetchNewProcess
+        fetchNewProcess,
+        processesInMemory
     } = useContext(ProcessesContext);
 
     useEffect(() => {
@@ -25,6 +26,7 @@ export const useKeysControls = () => {
                 }
                 case 'c': {
                     onClose();
+                    if ( processesInMemory === 0 ) return;
                     return playTimer();
                 }
                 case 'w': {
@@ -40,7 +42,7 @@ export const useKeysControls = () => {
                     return onOpen();
                 }
                 case 'n': {
-
+                    if (globalCounter.is_paused) return;
                     return fetchNewProcess();
                 }
             }

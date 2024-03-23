@@ -35,19 +35,19 @@ export const useProcessProvider = () =>{
         PROCESSES_INITIAL_STATE
     );
 
-    const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer();
+    const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const { get } = useFetch<IProcess[]>();
 
     useEffect(() => {
 
-        if (state.numberOfProcesses === state.finishedProcesses.length && !state.runningProcess ) {
+        if ( state.processesInMemory === 0 ) {
             pauseTimer();
         }else {
             playTimer();
         }
 
-    }, [state.finishedProcesses.length, state.runningProcess]);
+    }, [state.processesInMemory]);
 
     useEffect(()=>{
 
@@ -84,7 +84,7 @@ export const useProcessProvider = () =>{
     }, [globalCounter.timer]);
 
     useEffect(() => {
-        if ( !(state.processesInMemory < 4) ) return;
+        if ( state.processesInMemory >= 4 ) return;
 
         dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
 
@@ -124,8 +124,6 @@ export const useProcessProvider = () =>{
     }
 
     const fetchNewProcess = async() =>{
-
-        if ( globalCounter.is_paused  ) return;
 
         const newProcess = await get(`${ envs.API_URL}?noProcesses=1`);
         if ( !newProcess ) throw 'Error fetching process';
