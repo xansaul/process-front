@@ -1,5 +1,5 @@
 import {useContext} from "react";
-import {ActionKeysList, ProcessForm, ProcessTable} from "../components";
+import {ActionKeysList, ModalBCP, ProcessForm, ProcessTable} from "../components";
 import {ProcessesContext} from "../context";
 import {columns, columnsFinalTable, columnsReady, columnsRunning, columnsWithBlocked} from "../config/config-table.ts";
 import {useKeysControls} from "../hooks";
@@ -24,7 +24,7 @@ export const ProcessesView = () => {
         <div className="min-h-screen bg-slate-200 pb-10 text-gray-600">
 
             <div className="grid md:grid-cols-12 md:gap-0 gap-3  w-11/12 m-auto py-8">
-                <div className="col-span-7">
+                <div className="md:col-span-5">
                     <ProcessForm isDisable={globalCounter.initTimer}/>
                 </div>
                 <ActionKeysList />
@@ -80,6 +80,7 @@ export const ProcessesView = () => {
                     columns={columnsFinalTable}
                 />
             </div>
+            <ModalBCP />
         </div>
     );
 };

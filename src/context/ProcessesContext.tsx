@@ -16,6 +16,11 @@ export interface ContextProps {
     blockProcess: () => void;
     isLoadingProcesses: boolean;
     toggleIsLoading: () => void;
+    isOpen: boolean;
+    onOpen: () => void;
+    onOpenChange: () => void;
+    onClose: () => void;
+    fetchNewProcess: () => Promise<void>;
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

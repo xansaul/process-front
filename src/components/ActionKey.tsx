@@ -8,8 +8,8 @@ interface Props {
 
 export const ActionKey: React.FC<Props> = ({ action, keyToPress }) => {
     return (
-        <Chip size="lg" variant="flat" className="text-gray-600">
-                        <span className="font-medium">
+        <Chip size="lg" variant="flat" className="text-gray-500 text-sm">
+                        <span className="font-bold">
                             {action} &nbsp;
                         </span>
             <Kbd className="text-gray-500 font-bold">{keyToPress}</Kbd>

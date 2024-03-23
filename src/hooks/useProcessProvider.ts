@@ -4,6 +4,8 @@ import {useTimer} from "./useTimer.ts";
 import {evaluate} from "mathjs";
 import {IProcess} from "../interfaces/ProcessRequest.ts";
 import {envs} from "../config";
+import {useDisclosure} from "@nextui-org/react";
+import {useFetch} from "./useFetch.ts";
 
 export interface ProcessesState {
     processes: IProcess[];
@@ -34,6 +36,8 @@ export const useProcessProvider = () =>{
     );
 
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer();
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const { get } = useFetch<IProcess[]>();
 
     useEffect(() => {
 
@@ -84,7 +88,7 @@ export const useProcessProvider = () =>{
 
         dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
 
-    }, [state.processesInMemory]);
+    }, [state.processesInMemory, state.processes]);
 
     useEffect(() => {
         if ( !state.runningProcess ){
@@ -119,6 +123,15 @@ export const useProcessProvider = () =>{
         dispatch({ type: 'Processes - toggleIsLoadingProcesses' });
     }
 
+    const fetchNewProcess = async() =>{
+
+        if ( globalCounter.is_paused  ) return;
+
+        const newProcess = await get(`${ envs.API_URL}?noProcesses=1`);
+        if ( !newProcess ) throw 'Error fetching process';
+        dispatch({ type:'Processes - onFetchNewProcess', payload: newProcess[0] });
+    }
+
     return {
         state,
         setProcesses,
@@ -127,6 +140,11 @@ export const useProcessProvider = () =>{
         pauseTimer,
         playTimer,
         blockProcess,
-        toggleIsLoading
+        toggleIsLoading,
+        isOpen,
+        onOpen,
+        onOpenChange,
+        onClose,
+        fetchNewProcess
     }
 }

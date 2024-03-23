@@ -2,7 +2,7 @@
 
 export const actionKeys = [
     {
-        action: "Interrupción",
+        action: "Interruption",
         key: "E"
     },
     {
@@ -10,19 +10,19 @@ export const actionKeys = [
         key: "W"
     },
     {
-        action: "Pausa",
+        action: "Pause",
         key: "P"
     },
     {
-        action: "Continuar",
+        action: "Continue",
         key: "C"
     },
     {
-        action: "Nuevo",
+        action: "New",
         key: "N"
     },
     {
-        action: "Tabla de procesos",
+        action: "BCP",
         key: "B"
     },
 

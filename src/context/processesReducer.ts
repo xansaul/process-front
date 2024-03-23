@@ -11,7 +11,8 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: "Processes - onProcessBlock" }
     | { type: 'Processes - blocked2ReadyProcess', payload: number }
     | { type: 'Processes - ++blockedProcesses' }
-    | { type: 'Processes - toggleIsLoadingProcesses' };
+    | { type: 'Processes - toggleIsLoadingProcesses' }
+    | { type: 'Processes - onFetchNewProcess', payload: IProcess };
 
 export const ProcessesReducer = (
   state: ProcessesState,
@@ -29,7 +30,7 @@ export const ProcessesReducer = (
         readyProcesses,
         processes,
         numberOfProcesses: action.payload.length,
-        processesInMemory: 4
+        processesInMemory: readyProcesses.length
       };
     }
 
@@ -163,6 +164,13 @@ export const ProcessesReducer = (
       return  {
         ...state,
         runningProcess: updatedRunningProcess
+      }
+    }
+
+    case "Processes - onFetchNewProcess":{
+      return {
+        ...state,
+        processes: [...state.processes, action.payload]
       }
     }
 
