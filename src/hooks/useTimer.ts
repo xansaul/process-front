@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TimerState } from "../interfaces/Timer";
 
-export const useTimer = (): [TimerState, () => void, () => void, () => void] => {
+export const useTimer = (velocity: number): [TimerState, () => void, () => void, () => void] => {
   const [timerObj, setTimerObj] = useState<TimerState>({
     timer: 0,
     initTimer: false,
@@ -16,7 +16,7 @@ export const useTimer = (): [TimerState, () => void, () => void, () => void] => 
         ...prev,
         timer: prev.timer + 1,
       }));
-    }, 1000);
+    }, velocity);
 
     return () => {
       clearInterval(intervalId);

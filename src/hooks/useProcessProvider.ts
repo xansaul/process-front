@@ -4,6 +4,8 @@ import {useTimer} from "./useTimer.ts";
 import {evaluate} from "mathjs";
 import {IProcess} from "../interfaces/ProcessRequest.ts";
 import {envs} from "../config";
+import {useDisclosure} from "@nextui-org/react";
+import {useFetch} from "./useFetch.ts";
 
 export interface ProcessesState {
     processes: IProcess[];
@@ -33,17 +35,19 @@ export const useProcessProvider = () =>{
         PROCESSES_INITIAL_STATE
     );
 
-    const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer();
+    const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const { get } = useFetch<IProcess[]>();
 
     useEffect(() => {
 
-        if (state.numberOfProcesses === state.finishedProcesses.length && !state.runningProcess ) {
+        if ( state.processesInMemory === 0 ) {
             pauseTimer();
         }else {
             playTimer();
         }
 
-    }, [state.finishedProcesses.length, state.runningProcess]);
+    }, [state.processesInMemory]);
 
     useEffect(()=>{
 
@@ -62,7 +66,7 @@ export const useProcessProvider = () =>{
                 type: 'Processes - moveRunningProcess2Finished',
                 payload: {
                     timeFinished :globalCounter.timer,
-                    resultOperation: result
+                    resultOperation: result.toFixed(2)
                 }
             });
         }
@@ -80,11 +84,11 @@ export const useProcessProvider = () =>{
     }, [globalCounter.timer]);
 
     useEffect(() => {
-        if ( !(state.processesInMemory < 4) ) return;
+        if ( state.processesInMemory >= 4 ) return;
 
         dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
 
-    }, [state.processesInMemory]);
+    }, [state.processesInMemory, state.processes]);
 
     useEffect(() => {
         if ( !state.runningProcess ){
@@ -119,6 +123,17 @@ export const useProcessProvider = () =>{
         dispatch({ type: 'Processes - toggleIsLoadingProcesses' });
     }
 
+    const fetchNewProcess = async() =>{
+
+        const newProcess = await get(`${ envs.API_URL}?noProcesses=1`);
+        if ( !newProcess ) throw 'Error fetching process';
+        dispatch({ type:'Processes - onFetchNewProcess', payload: newProcess[0] });
+    }
+
+    const calcBcpTable = () => {
+        dispatch({ type: 'Processes - calcWaitAndServiceTime', payload: globalCounter.timer });
+    }
+
     return {
         state,
         setProcesses,
@@ -127,6 +142,12 @@ export const useProcessProvider = () =>{
         pauseTimer,
         playTimer,
         blockProcess,
-        toggleIsLoading
+        toggleIsLoading,
+        isOpen,
+        onOpen,
+        onOpenChange,
+        onClose,
+        fetchNewProcess,
+        calcBcpTable
     }
 }

@@ -4,30 +4,50 @@ import {ProcessesContext} from "../context";
 
 export const useKeysControls = () => {
 
-    const { pauseTimer, playTimer, finishProcessWithError, globalCounter, blockProcess, } = useContext(ProcessesContext);
+    const {
+        pauseTimer,
+        playTimer,
+        finishProcessWithError,
+        globalCounter,
+        blockProcess,
+        onOpen,
+        onClose,
+        fetchNewProcess,
+        processesInMemory,
+        calcBcpTable
+    } = useContext(ProcessesContext);
 
     useEffect(() => {
 
         const handleKey = (event: KeyboardEvent) => {
 
-            switch(event.key){
-                case 'p':{
+            switch (event.key) {
+                case 'p': {
                     return pauseTimer();
                 }
-                case 'c':{
-
+                case 'c': {
+                    onClose();
+                    if ( processesInMemory === 0 ) return;
                     return playTimer();
                 }
                 case 'w': {
-                    if ( globalCounter.is_paused ) return ;
+                    if (globalCounter.is_paused) return;
                     return finishProcessWithError(globalCounter.timer);
                 }
-                case 'e':{
-                    if ( globalCounter.is_paused ) return ;
+                case 'e': {
+                    if (globalCounter.is_paused) return;
                     return blockProcess();
                 }
+                case 'b': {
+                    pauseTimer();
+                    calcBcpTable();
+                    return onOpen();
+                }
+                case 'n': {
+                    if (globalCounter.is_paused) return;
+                    return fetchNewProcess();
+                }
             }
-
 
 
         };

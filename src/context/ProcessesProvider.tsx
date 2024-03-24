@@ -1,38 +1,51 @@
-import { FC, ReactNode } from "react";
-import { ProcessesContext } from "./";
+import {FC, ReactNode} from "react";
+import {ProcessesContext} from "./";
 import {useProcessProvider} from "../hooks";
 
 interface Props {
-  children: ReactNode;
+    children: ReactNode;
 }
 
-export const ProcessesProvider: FC<Props> = ({ children }) => {
+export const ProcessesProvider: FC<Props> = ({children}) => {
 
-  const { setProcesses,
-    finishProcessWithError,
-    state,
-    playTimer,
-    pauseTimer,
-    globalCounter
-      ,blockProcess,
-      toggleIsLoading
-  } = useProcessProvider();
-
-
-  return (
-    <ProcessesContext.Provider
-      value={{
-        ...state,
-        globalCounter,
+    const {
         setProcesses,
-        pauseTimer,
-        playTimer,
         finishProcessWithError,
-          blockProcess,
-          toggleIsLoading
-      }}
-    >
-      {children}
-    </ProcessesContext.Provider>
-  );
+        state,
+        playTimer,
+        pauseTimer,
+        globalCounter
+        , blockProcess,
+        toggleIsLoading,
+        onOpen,
+        isOpen,
+        onOpenChange,
+        onClose,
+        fetchNewProcess,
+        calcBcpTable
+    } = useProcessProvider();
+
+
+    return (
+        <ProcessesContext.Provider
+            value={{
+                ...state,
+                globalCounter,
+                setProcesses,
+                pauseTimer,
+                playTimer,
+                finishProcessWithError,
+                blockProcess,
+                toggleIsLoading,
+                onOpen,
+                isOpen,
+                onOpenChange,
+                onClose,
+                fetchNewProcess,
+                calcBcpTable
+            }}
+        >
+            {children}
+        </ProcessesContext.Provider>
+    );
 };

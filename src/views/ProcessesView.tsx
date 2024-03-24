@@ -1,8 +1,9 @@
 import {useContext} from "react";
-import {ProcessForm, ProcessTable} from "../components";
+import {ActionKeysList, ModalBCP, ProcessForm, ProcessTable} from "../components";
 import {ProcessesContext} from "../context";
 import {columns, columnsFinalTable, columnsReady, columnsRunning, columnsWithBlocked} from "../config/config-table.ts";
 import {useKeysControls} from "../hooks";
+
 
 export const ProcessesView = () => {
 
@@ -22,9 +23,15 @@ export const ProcessesView = () => {
     return (
         <div className="min-h-screen bg-slate-200 pb-10 text-gray-600">
 
-            <ProcessForm isDisable={globalCounter.initTimer}/>
-            <h2 className="text-center mb-4 font-medium text-2xl pt-1">Global Counter: {globalCounter.timer}</h2>
-            <h2 className="text-center mb-4 font-medium text-xl">New Processes: {processes.length}</h2>
+            <div className="grid md:grid-cols-12 md:gap-0 gap-3  w-11/12 m-auto py-8">
+                <div className="md:col-span-5">
+                    <ProcessForm isDisable={globalCounter.initTimer}/>
+                </div>
+                <ActionKeysList />
+            </div>
+
+            <h2 className="text-center mb-4 font-bold text-2xl pt-1">Global Counter: {globalCounter.timer}</h2>
+            <h2 className="text-center mb-4 font-bold text-xl">New Processes: {processes.length}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-12 md:gap-4 gap-3 w-11/12 m-auto">
 
@@ -73,6 +80,7 @@ export const ProcessesView = () => {
                     columns={columnsFinalTable}
                 />
             </div>
+            <ModalBCP />
         </div>
     );
 };
