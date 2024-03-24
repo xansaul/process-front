@@ -159,7 +159,12 @@ export const BCPTable = [
     {
         key: "remaining_time_running",
         label: "REMAINING TIME"
-    }
+    },
+    {
+        key: "state",
+        label: "STATE"
+    },
+
 ];
 
 

@@ -66,7 +66,7 @@ export const useProcessProvider = () =>{
                 type: 'Processes - moveRunningProcess2Finished',
                 payload: {
                     timeFinished :globalCounter.timer,
-                    resultOperation: result
+                    resultOperation: result.toFixed(2)
                 }
             });
         }
