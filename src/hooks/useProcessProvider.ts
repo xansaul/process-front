@@ -77,7 +77,7 @@ export const useProcessProvider = () =>{
     useEffect(() => {
         dispatch({ type: 'Processes - ++blockedProcesses' });
         state.blockedProcesses.forEach(process => {
-            if (process.remaining_time_blocked === envs.SECONDS_BLOCKED_PROCESS) {
+            if (process.elapsed_time_blocked === envs.SECONDS_BLOCKED_PROCESS) {
                 dispatch({ type: 'Processes - blocked2ReadyProcess', payload: process.id });
             }
         });

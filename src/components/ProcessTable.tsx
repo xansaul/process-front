@@ -5,7 +5,7 @@ import {
     TableBody,
     TableRow,
     TableCell,
-    getKeyValue, Spinner
+    Spinner
 } from "@nextui-org/react";
 import {IProcess} from "../interfaces/ProcessRequest";
 import {columns as columnsTable} from "../config/config-table.ts";
@@ -41,6 +41,30 @@ export const ProcessTable: React.FC<Props> = ({
                                                   removeWrapper = false
                                               }) => {
 
+    const renderCell = React.useCallback((process: IProcess, columnKey: React.Key) => {
+        const cellValue = process[columnKey as keyof IProcess];
+
+        switch (columnKey) {
+            case 'id': {
+                return (
+                    <div className="max-w-[60px] truncate text-nowrap">
+                        <span title={`${columnKey === 'id' ? process.id : ''}`}>
+                            {process.id}
+                        </span>
+                    </div>
+                )
+            }
+            case 'remaining_time_blocked': {
+                return (
+                    <>
+                        {process.state === 'blocked' ? 8 - process.elapsed_time_blocked : 'no blocked'}
+                    </>
+                )
+            }
+            default:
+                return cellValue;
+        }
+    }, []);
 
     return (
         <div>
@@ -90,17 +114,11 @@ export const ProcessTable: React.FC<Props> = ({
                         >
                             {(columnKey) => {
                                 return (
-                                        <TableCell className={
-                                            `first:rounded-l-lg last:rounded-r-lg 
-                                            ${columnKey === 'id' ?"max-w-[60px] truncate text-nowrap":""}
-                                            `
-                                        }>
-                                            <span title={`${columnKey === 'id' ? process.id : ''}`}>
-                                                {getKeyValue(process, columnKey)}
-                                            </span>
-                                        </TableCell>
-                                    )
-                                }
+                                    <TableCell className="first:rounded-l-lg last:rounded-r-lg">
+                                        {renderCell(process, columnKey)}
+                                    </TableCell>
+                                )
+                            }
                             }
                         </TableRow>
                     )}

@@ -33,8 +33,9 @@ export const ModalBCP = () => {
             isDismissable={false}
             hideCloseButton
             className="p-4"
+            placement="center"
         >
-            <ModalContent className="max-w-7xl">
+            <ModalContent className="md:max-w-screen-2xl max-w-sm">
                 {() => (
                     <>
                         <ModalHeader

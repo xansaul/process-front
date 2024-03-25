@@ -30,7 +30,7 @@ export const columnsWithBlocked = [
         label: "ID",
     },
     {
-        key: "remaining_time_blocked",
+        key: "elapsed_time_blocked",
         label: "ELAPSED TIME BLOCKED"
     }
 ];
@@ -164,7 +164,10 @@ export const BCPTable = [
         key: "state",
         label: "STATE"
     },
-
+    {
+        key: "remaining_time_blocked",
+        label: "REMAINING TIME BLOCKED"
+    }
 ];
 
 
