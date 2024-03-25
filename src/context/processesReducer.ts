@@ -9,7 +9,7 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: "Processes - addNewReadyProcess", payload: number }
     | { type: "Processes - --time_remainingRunningProcess" }
     | { type: "Processes - onProcessBlock" }
-    | { type: 'Processes - blocked2ReadyProcess', payload: number }
+    | { type: 'Processes - blocked2ReadyProcess', payload: string }
     | { type: 'Processes - ++blockedProcesses' }
     | { type: 'Processes - toggleIsLoadingProcesses' }
     | { type: 'Processes - calcWaitAndServiceTime', payload: number }
@@ -133,20 +133,21 @@ export const ProcessesReducer = (
             );
 
             blockedProcess!.time_blocked = 0;
-            blockedProcess!.remaining_time_blocked = 0;
+            blockedProcess!.elapsed_time_blocked = 0;
+            blockedProcess!.state = 'ready';
             const updatedReadyProcesses = [...state.readyProcesses, blockedProcess as IProcess];
 
             return {
                 ...state,
                 blockedProcesses: updatedBlockedProcesses,
-                readyProcesses: updatedReadyProcesses
+                readyProcesses: updatedReadyProcesses,
             };
         }
 
         case 'Processes - ++blockedProcesses': {
             const updatedBlockedProcesses = state.blockedProcesses.map(process => ({
                 ...process,
-                remaining_time_blocked: process.remaining_time_blocked + 1
+                elapsed_time_blocked: process.elapsed_time_blocked + 1
             }));
 
             return {
