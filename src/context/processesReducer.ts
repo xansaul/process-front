@@ -13,7 +13,8 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: 'Processes - ++blockedProcesses' }
     | { type: 'Processes - toggleIsLoadingProcesses' }
     | { type: 'Processes - calcWaitAndServiceTime', payload: number }
-    | { type: 'Processes - onFetchNewProcess', payload: IProcess };
+    | { type: 'Processes - onFetchNewProcess', payload: IProcess }
+    | { type: 'Processes - rr' };
 
 export const ProcessesReducer = (
     state: ProcessesState,
@@ -236,6 +237,24 @@ export const ProcessesReducer = (
                 blockedProcesses: updatedBlockedProcesses,
                 readyProcesses: updatedReadyProcesses,
                 processes: updatedProcesses,
+            }
+        }
+
+        case 'Processes - rr': {
+            
+            if (!state.runningProcess) return state;
+
+            const runningProcess = {...state.runningProcess};
+
+            runningProcess.elapsdT += 1; 
+            
+            const newQueueProcess = [...state.readyProcesses, runningProcess];
+            
+            return {
+                ...state,
+                readyProcesses: newQueueProcess,
+                runningProcess: undefined,
+
             }
         }
 

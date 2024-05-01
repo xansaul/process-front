@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {ProcessesReducer} from "../context";
 import {useTimer} from "./useTimer.ts";
 import {evaluate} from "mathjs";
@@ -34,25 +34,37 @@ export const useProcessProvider = () =>{
         ProcessesReducer,
         PROCESSES_INITIAL_STATE
     );
-
+    
+    const [rrTime, setRrTime] = useState<number>(0);
+    
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const { get } = useFetch<IProcess[]>();
-
+    
     useEffect(() => {
-
+        
         if ( state.processesInMemory === 0 ) {
             pauseTimer();
         }else {
             playTimer();
         }
-
+        
     }, [state.processesInMemory]);
-
+    
     useEffect(()=>{
+        if (!state.runningProcess) return;
+        setRrTime(prev => prev+1);
+        
+        if ( rrTime === 2 ){
+            dispatch({type: 'Processes - rr'});
+            setRrTime(0);
 
+            return;
+        }
         dispatch({ type: 'Processes - ++timeELAPSEDTimeRunningProcess' });
         dispatch({type: 'Processes - --time_remainingRunningProcess'});
+                
+        
 
     },[ globalCounter.timer ]);
 
@@ -106,6 +118,7 @@ export const useProcessProvider = () =>{
                 resultOperation: "error"
             }
         });
+        setRrTime(0);
     }
 
     const setProcesses = (processes: IProcess[]) => {
