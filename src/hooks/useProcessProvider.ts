@@ -35,7 +35,8 @@ export const useProcessProvider = () =>{
         PROCESSES_INITIAL_STATE
     );
     
-    const [rrTime, setRrTime] = useState<number>(0);
+    const [quantum, setQuantum] = useState(3);
+    const [rrTimeCounter, setRrTimeCounter] = useState<number>(0);
     
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -53,17 +54,17 @@ export const useProcessProvider = () =>{
     
     useEffect(()=>{
         if (!state.runningProcess) return;
-        setRrTime(prev => prev+1);
-        
-        if ( rrTime === 2 ){
+        setRrTimeCounter(prev => prev+1);
+
+        if ( rrTimeCounter === Number(quantum)-1 ){
             dispatch({type: 'Processes - rr'});
-            setRrTime(0);
+            setRrTimeCounter(0);
 
             return;
         }
         dispatch({ type: 'Processes - ++timeELAPSEDTimeRunningProcess' });
         dispatch({type: 'Processes - --time_remainingRunningProcess'});
-                
+        
         
 
     },[ globalCounter.timer ]);
@@ -83,6 +84,23 @@ export const useProcessProvider = () =>{
             });
         }
 
+    },[state.runningProcess?.elapsdT]);
+
+    useEffect(()=>{
+
+        if(!state.runningProcess) return;
+
+        if ( state.runningProcess.elapsdT === state.runningProcess.TEM ){
+            const result = evaluate(state.runningProcess.operation);
+            dispatch({
+                type: 'Processes - moveRunningProcess2Finished',
+                payload: {
+                    timeFinished :globalCounter.timer,
+                    resultOperation: result.toFixed(2)
+                }
+            });
+            setRrTimeCounter(0);
+        }
     },[state.runningProcess?.elapsdT]);
 
 
@@ -118,7 +136,7 @@ export const useProcessProvider = () =>{
                 resultOperation: "error"
             }
         });
-        setRrTime(0);
+        setRrTimeCounter(0);
     }
 
     const setProcesses = (processes: IProcess[]) => {
@@ -161,6 +179,7 @@ export const useProcessProvider = () =>{
         onOpenChange,
         onClose,
         fetchNewProcess,
-        calcBcpTable
+        calcBcpTable,
+        setQuantum
     }
 }

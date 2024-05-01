@@ -22,7 +22,8 @@ export interface ContextProps {
     onClose: () => void;
     fetchNewProcess: () => Promise<void>;
     processesInMemory: number;
-    calcBcpTable: () => void
+    calcBcpTable: () => void;
+    setQuantum: React.Dispatch<React.SetStateAction<number>>
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

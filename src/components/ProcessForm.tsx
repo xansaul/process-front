@@ -11,6 +11,7 @@ export const ProcessForm: React.FC<Props> = ({ isDisable = false }) => {
     const { fetchProcesses,
         handleInputChange,
         noProcesses,
+        quantum,
         isLoading,
     } = useProcesses();
 
@@ -28,6 +29,16 @@ export const ProcessForm: React.FC<Props> = ({ isDisable = false }) => {
             onChange={handleInputChange}
             value={noProcesses.toString()}
             description={`Max processes ${envs.MAX_NUMBER_OF_PROCESSES_TO_REQUEST}`}
+          />
+          <Input
+            className="mb-2 md:w-4/12"
+            placeholder="Quantum"
+            label={<p className="font-semibold text-gray-600">Quantum</p>}
+            labelPlacement="outside"
+            type="number"
+            name="quantum"
+            onChange={handleInputChange}
+            value={quantum.toString()}
           />
           <Button
             color="primary"

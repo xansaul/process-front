@@ -247,6 +247,18 @@ export const ProcessesReducer = (
             const runningProcess = {...state.runningProcess};
 
             runningProcess.elapsdT += 1; 
+            runningProcess.remaining_time_running -= 1; 
+
+            if (runningProcess.elapsdT === runningProcess.TEM) {
+                const newFinishedsProcesses = [...state.finishedProcesses, runningProcess];
+
+                return {
+                    ...state,
+                    finishedProcesses: newFinishedsProcesses,
+                    runningProcess: undefined,
+    
+                }
+            }
             
             const newQueueProcess = [...state.readyProcesses, runningProcess];
             

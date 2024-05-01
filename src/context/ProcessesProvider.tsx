@@ -22,7 +22,8 @@ export const ProcessesProvider: FC<Props> = ({children}) => {
         onOpenChange,
         onClose,
         fetchNewProcess,
-        calcBcpTable
+        calcBcpTable,
+        setQuantum,
     } = useProcessProvider();
 
 
@@ -42,7 +43,8 @@ export const ProcessesProvider: FC<Props> = ({children}) => {
                 onOpenChange,
                 onClose,
                 fetchNewProcess,
-                calcBcpTable
+                calcBcpTable, 
+                setQuantum
             }}
         >
             {children}

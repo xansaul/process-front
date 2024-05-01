@@ -5,12 +5,12 @@ import { IProcess } from "../interfaces/ProcessRequest";
 import { useFetch, useForm } from "./";
 import {isInteger, isNaN} from "mathjs";
 
-const initialData = { noProcesses: '0' }
+const initialData = { noProcesses: '0', quantum: 0 }
 export const useProcesses = () => {
 
-    const { setProcesses, toggleIsLoading  } = useContext(ProcessesContext);
+    const { setProcesses, toggleIsLoading, setQuantum  } = useContext(ProcessesContext);
     const { isLoading, get } = useFetch<IProcess[]>();
-    const { handleInputChange, dataForm } = useForm<{ noProcesses: string }>({
+    const { handleInputChange, dataForm } = useForm<{ noProcesses: string, quantum: number }>({
         initialData
     })
     const validateInput = (input: string): boolean => {
@@ -35,6 +35,7 @@ export const useProcesses = () => {
             setProcesses([]);
         }else{
             setProcesses(data);
+            setQuantum(dataForm.quantum);
         }
 
         toggleIsLoading();
@@ -47,6 +48,7 @@ export const useProcesses = () => {
         handleInputChange,
         // variables
         noProcesses: dataForm.noProcesses,
+        quantum: dataForm.quantum,
         isLoading
     }
 }
