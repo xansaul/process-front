@@ -27,6 +27,7 @@ export interface ContextProps {
     setQuantum: React.Dispatch<React.SetStateAction<number>>;
     processesInBuffer: ProcessWithPages[];
     buffer: string[];
+    nextProcess: ProcessWithPages | undefined;
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

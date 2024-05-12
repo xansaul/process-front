@@ -18,6 +18,7 @@ export interface ProcessesState {
     processesInMemory: number;
     processesInBuffer: ProcessWithPages[];
     buffer: string[];
+    nextProcess: ProcessWithPages | undefined;
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
@@ -31,6 +32,7 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     processesInMemory: 0,
     processesInBuffer: [],
     buffer: Array<string>(46).fill(""),
+    nextProcess: undefined,
 };
 
 export const useProcessProvider = () =>{
@@ -47,14 +49,15 @@ export const useProcessProvider = () =>{
     const { get } = useFetch<IProcess[]>();
     
     useEffect(() => {
+
         
-        if ( state.processesInMemory === 0 ) {
-            pauseTimer();
+        if ( state.readyProcesses.length !== 0 || state.runningProcess ) {
+            playTimer(); 
         }else {
-            playTimer();
+            pauseTimer();
         }
         
-    }, [state.processesInMemory]);
+    }, [state.readyProcesses,state.runningProcess]);
     
     useEffect(()=>{
         if (!state.runningProcess) return;
@@ -118,11 +121,11 @@ export const useProcessProvider = () =>{
     }, [globalCounter.timer]);
 
     useEffect(() => {
-        if ( state.processesInMemory >= 4 ) return;
+
 
         dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
 
-    }, [state.processesInMemory, state.processes]);
+    }, [state.processes, state.readyProcesses]);
 
     useEffect(() => {
         if ( !state.runningProcess ){

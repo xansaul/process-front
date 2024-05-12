@@ -29,7 +29,6 @@ export const ProcessesReducer = (
             const buffer_with_os = [...state.buffer];
             buffer_with_os.fill("os", buffer_with_os.length - 5, buffer_with_os.length );
 
-
             const readyProcesses = action.payload.map(process => {
                 const numberOfEmpties = buffer_with_os.filter(element => element === "").length;
                 const newProcessPaginated = new ProcessWithPages(process.id);
@@ -48,11 +47,8 @@ export const ProcessesReducer = (
                     process.state = 'ready';
                     return process;
                 }
-                
-
+            
             });
-
-
 
             const filteredProcesses = readyProcesses.filter((process): process is IProcess => process !== undefined);
 
@@ -60,6 +56,12 @@ export const ProcessesReducer = (
                 
                 return !filteredProcesses.some(filteredProcess => filteredProcess.id === process.id);
             });
+
+            const [nextProcess] = processes;
+            let nextProcessWithNumberOfPages = undefined;
+            if ( nextProcess ) {
+                nextProcessWithNumberOfPages = new ProcessWithPages(nextProcess.id);
+            }
             
             return {
                 ...state,
@@ -67,7 +69,8 @@ export const ProcessesReducer = (
                 processes,
                 readyProcesses: filteredProcesses,
                 numberOfProcesses: action.payload.length,
-                processesInMemory: filteredProcesses.length
+                processesInMemory: filteredProcesses.length,
+                nextProcess: nextProcessWithNumberOfPages
             };
         }
 
@@ -131,7 +134,7 @@ export const ProcessesReducer = (
                 ...state,
                 runningProcess: undefined,
                 finishedProcesses: [...state.finishedProcesses, newProcessFinished],
-                processesInMemory: state.processesInMemory - 1
+
             };
         }
 
@@ -139,6 +142,20 @@ export const ProcessesReducer = (
             const [newReadyProcess, ...processes] = state.processes
 
             if (!newReadyProcess) return {...state};
+            if ( !state.nextProcess ) return {...state};
+
+            const numberOfEmpties = state.buffer.filter(element => element === "").length;
+            if ( numberOfEmpties < state.nextProcess.pagesNeeded ) return {...state};
+            const newBuffer = [...state.buffer];
+            for(let i = 0; i <= state.nextProcess.pagesNeeded; i++){
+
+                const emptyIndex = newBuffer.indexOf("");
+                if (emptyIndex !== -1) {
+
+                    newBuffer[emptyIndex] = `${state.nextProcess.processUuid}`;
+                }
+            }
+
 
             if (!newReadyProcess.addedToReadyForFirstTime) {
                 newReadyProcess.initial_time = action.payload;
@@ -146,12 +163,20 @@ export const ProcessesReducer = (
             }
             newReadyProcess.state = 'ready';
 
-            const readyProcesses = [...state.readyProcesses, newReadyProcess]
+            const readyProcesses = [...state.readyProcesses, newReadyProcess];
+
+            const [nextProcess] = processes;
+            let nextProcessWithNumberOfPages = undefined;
+            if ( nextProcess ) {
+                nextProcessWithNumberOfPages = new ProcessWithPages(nextProcess.id);
+            }
+
             return {
                 ...state,
+                buffer:newBuffer,
                 readyProcesses,
                 processes,
-                processesInMemory: state.processesInMemory + 1
+                nextProcess: nextProcessWithNumberOfPages,
             }
         }
 

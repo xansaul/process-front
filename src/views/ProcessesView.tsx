@@ -23,6 +23,7 @@ export const ProcessesView = () => {
     processes,
     finishedProcesses,
     blockedProcesses,
+    nextProcess
   } = useContext(ProcessesContext);
 
   useKeysControls();
@@ -51,6 +52,17 @@ export const ProcessesView = () => {
                         columns={columnsReady}
                         isLoading={isLoadingProcesses}
                     /> */}
+          {nextProcess&&(
+            <span>
+              <h4 className="font-bold">Next process</h4>
+              <span className="font-bold block">
+                id: {nextProcess?.processUuid}
+              </span>
+              <span className="font-bold block">
+                size: {nextProcess?.size}
+              </span>
+            </span>
+          )}
           <Buffer buffer={buffer} />
         </div>
 
