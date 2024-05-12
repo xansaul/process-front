@@ -1,5 +1,6 @@
 import {IProcess} from "../interfaces/ProcessRequest";
 import {ProcessesState} from "../hooks/useProcessProvider.ts";
+import { ProcessWithPages } from "../entities/Page.ts";
 
 
 type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess[] }
@@ -24,18 +25,49 @@ export const ProcessesReducer = (
     switch (action.type) {
 
         case "Processes - setProcesses": {
-            const readyProcesses = action.payload.slice(0, 4).map(process => {
-                process.state = 'ready';
-                return process;
-            });
-            const processes = action.payload.slice(4);
 
+            const buffer_with_os = [...state.buffer];
+            buffer_with_os.fill("os", buffer_with_os.length - 5, buffer_with_os.length );
+
+
+            const readyProcesses = action.payload.map(process => {
+                const numberOfEmpties = buffer_with_os.filter(element => element === "").length;
+                const newProcessPaginated = new ProcessWithPages(process.id);
+
+                if ( numberOfEmpties > newProcessPaginated.pagesNeeded ) {
+                    
+                    for(let i = 0; i <= newProcessPaginated.pagesNeeded; i++){
+
+                        const emptyIndex = buffer_with_os.indexOf("");
+                        if (emptyIndex !== -1) {
+    
+                            buffer_with_os[emptyIndex] = `${newProcessPaginated.processUuid}`;
+                        }
+                    }
+
+                    process.state = 'ready';
+                    return process;
+                }
+                
+
+            });
+
+
+
+            const filteredProcesses = readyProcesses.filter((process): process is IProcess => process !== undefined);
+
+            const processes = action.payload.filter(process => {
+                
+                return !filteredProcesses.some(filteredProcess => filteredProcess.id === process.id);
+            });
+            
             return {
                 ...state,
-                readyProcesses,
+                buffer: buffer_with_os,
                 processes,
+                readyProcesses: filteredProcesses,
                 numberOfProcesses: action.payload.length,
-                processesInMemory: readyProcesses.length
+                processesInMemory: filteredProcesses.length
             };
         }
 
@@ -74,6 +106,15 @@ export const ProcessesReducer = (
         case 'Processes - moveRunningProcess2Finished': {
             const {runningProcess} = state;
             if (!runningProcess) return {...state};
+
+            const processesInBuffer = state.buffer;
+            processesInBuffer.forEach((processUuid, index)=>{
+                if(runningProcess.id === processUuid){
+                    processesInBuffer[index] = "";
+                }
+            });
+
+
             const newProcessFinished: IProcess = {
                 ...runningProcess,
                 time_finished: action.payload.timeFinished,
@@ -251,6 +292,14 @@ export const ProcessesReducer = (
 
             if (runningProcess.elapsdT === runningProcess.TEM) {
                 const newFinishedsProcesses = [...state.finishedProcesses, runningProcess];
+
+                const processesInBuffer = state.buffer;
+                processesInBuffer.forEach((processUuid, index)=>{
+                    if(runningProcess.id === processUuid){
+                        processesInBuffer[index] = "";
+                    }
+                });
+    
 
                 return {
                     ...state,

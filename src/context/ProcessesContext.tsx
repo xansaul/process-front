@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 import { IProcess } from '../interfaces/ProcessRequest';
 import { TimerState } from '../interfaces/Timer';
+import { ProcessWithPages } from '../entities/Page';
 
 export interface ContextProps {
     processes: IProcess[];
@@ -23,7 +24,9 @@ export interface ContextProps {
     fetchNewProcess: () => Promise<void>;
     processesInMemory: number;
     calcBcpTable: () => void;
-    setQuantum: React.Dispatch<React.SetStateAction<number>>
+    setQuantum: React.Dispatch<React.SetStateAction<number>>;
+    processesInBuffer: ProcessWithPages[];
+    buffer: string[];
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

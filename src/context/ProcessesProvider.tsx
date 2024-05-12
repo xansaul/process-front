@@ -24,6 +24,7 @@ export const ProcessesProvider: FC<Props> = ({children}) => {
         fetchNewProcess,
         calcBcpTable,
         setQuantum,
+        
     } = useProcessProvider();
 
 

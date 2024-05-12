@@ -6,7 +6,7 @@ import {IProcess} from "../interfaces/ProcessRequest.ts";
 import {envs} from "../config";
 import {useDisclosure} from "@nextui-org/react";
 import {useFetch} from "./useFetch.ts";
-
+import { ProcessWithPages } from "../entities/Page.ts";
 export interface ProcessesState {
     processes: IProcess[];
     blockedProcesses: IProcess[];
@@ -16,6 +16,8 @@ export interface ProcessesState {
     numberOfProcesses: number;
     isLoadingProcesses: boolean;
     processesInMemory: number;
+    processesInBuffer: ProcessWithPages[];
+    buffer: string[];
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
@@ -26,7 +28,9 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     runningProcess: undefined,
     numberOfProcesses: 0,
     isLoadingProcesses: false,
-    processesInMemory: 0
+    processesInMemory: 0,
+    processesInBuffer: [],
+    buffer: Array<string>(46).fill(""),
 };
 
 export const useProcessProvider = () =>{
@@ -34,7 +38,7 @@ export const useProcessProvider = () =>{
         ProcessesReducer,
         PROCESSES_INITIAL_STATE
     );
-    
+
     const [quantum, setQuantum] = useState(3);
     const [rrTimeCounter, setRrTimeCounter] = useState<number>(0);
     
