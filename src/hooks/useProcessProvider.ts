@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import {ProcessesReducer} from "../context";
 import {useTimer} from "./useTimer.ts";
 import {evaluate} from "mathjs";
-import {IProcess} from "../interfaces/ProcessRequest.ts";
+import {BufferItem, IProcess} from "../interfaces/ProcessRequest.ts";
 import {envs} from "../config";
 import {useDisclosure} from "@nextui-org/react";
 import {useFetch} from "./useFetch.ts";
@@ -17,7 +17,7 @@ export interface ProcessesState {
     isLoadingProcesses: boolean;
     processesInMemory: number;
     processesInBuffer: ProcessWithPages[];
-    buffer: string[];
+    buffer: (BufferItem|undefined)[];
     nextProcess: ProcessWithPages | undefined;
     processesWithPages: ProcessWithPages[];
 }
@@ -32,7 +32,7 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     isLoadingProcesses: false,
     processesInMemory: 0,
     processesInBuffer: [],
-    buffer: Array<string>(46).fill(""),
+    buffer: Array<(BufferItem|undefined)>(46).fill(undefined),
     nextProcess: undefined,
     processesWithPages: []
 };

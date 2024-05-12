@@ -27,20 +27,25 @@ export const ProcessesReducer = (
         case "Processes - setProcesses": {
 
             const buffer_with_os = [...state.buffer];
-            buffer_with_os.fill("os", buffer_with_os.length - 5, buffer_with_os.length );
+            buffer_with_os.fill({process: new ProcessWithPages("os"), size: 5 }, buffer_with_os.length - 5, buffer_with_os.length );
             const processesWithPages: ProcessWithPages[] = [];
             const readyProcesses = action.payload.map(process => {
-                const numberOfEmpties = buffer_with_os.filter(element => element === "").length;
+                const numberOfEmpties = buffer_with_os.filter(element => element === undefined).length;
                 const newProcessPaginated = new ProcessWithPages(process.id);
 
                 if ( numberOfEmpties > newProcessPaginated.pagesNeeded ) {
                     
                     for(let i = 0; i <= newProcessPaginated.pagesNeeded; i++){
 
-                        const emptyIndex = buffer_with_os.indexOf("");
+                        const emptyIndex = buffer_with_os.indexOf(undefined);
                         if (emptyIndex !== -1) {
-    
-                            buffer_with_os[emptyIndex] = `${newProcessPaginated.processUuid}`;
+                            if (i!=newProcessPaginated.pagesNeeded) {
+
+                                buffer_with_os[emptyIndex] = {process:newProcessPaginated, size: 5};
+                            }else{
+                                
+                                buffer_with_os[emptyIndex] = {process:newProcessPaginated, size: newProcessPaginated.size%5};
+                            }
                         }
                     }
                     
@@ -115,9 +120,9 @@ export const ProcessesReducer = (
             const processesWithPages = state.processesWithPages.filter(process => process.processUuid !== runningProcess.id);
 
             const processesInBuffer = state.buffer;
-            processesInBuffer.forEach((processUuid, index)=>{
-                if(runningProcess.id === processUuid){
-                    processesInBuffer[index] = "";
+            processesInBuffer.forEach((processWithPages, index)=>{
+                if(runningProcess.id === processWithPages?.process.processUuid){
+                    processesInBuffer[index] = undefined;
                 }
             });
 
@@ -149,16 +154,20 @@ export const ProcessesReducer = (
             if (!newReadyProcess) return {...state};
             if ( !state.nextProcess ) return {...state};
 
-            const numberOfEmpties = state.buffer.filter(element => element === "").length;
+            const numberOfEmpties = state.buffer.filter(element => element === undefined).length;
             if ( numberOfEmpties < state.nextProcess.pagesNeeded ) return {...state};
             const newBuffer = [...state.buffer];
             for(let i = 0; i <= state.nextProcess.pagesNeeded; i++){
 
-                const emptyIndex = newBuffer.indexOf("");
+                const emptyIndex = newBuffer.indexOf(undefined);
                 if (emptyIndex !== -1) {
+                    if (i!=state.nextProcess.pagesNeeded) {
 
-                    newBuffer[emptyIndex] = `${state.nextProcess.processUuid}`;
-                    state.processesWithPages.push(state.nextProcess)
+                        newBuffer[emptyIndex] = {process:state.nextProcess, size: 5};
+                    }else{
+                        
+                        newBuffer[emptyIndex] = {process:state.nextProcess, size: state.nextProcess.size%5};
+                    }
                 }
             }
 
@@ -326,9 +335,9 @@ export const ProcessesReducer = (
                 const newFinishedsProcesses = [...state.finishedProcesses, runningProcess];
 
                 const processesInBuffer = state.buffer;
-                processesInBuffer.forEach((processUuid, index)=>{
-                    if(runningProcess.id === processUuid){
-                        processesInBuffer[index] = "";
+                processesInBuffer.forEach((processWithPages, index)=>{
+                    if(runningProcess.id === processWithPages?.process.processUuid){
+                        processesInBuffer[index] = undefined;
                     }
                 });
                

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IProcess } from '../interfaces/ProcessRequest';
+import { BufferItem, IProcess } from '../interfaces/ProcessRequest';
 import { TimerState } from '../interfaces/Timer';
 import { ProcessWithPages } from '../entities/Page';
 
@@ -26,7 +26,7 @@ export interface ContextProps {
     calcBcpTable: () => void;
     setQuantum: React.Dispatch<React.SetStateAction<number>>;
     processesInBuffer: ProcessWithPages[];
-    buffer: string[];
+    buffer: (BufferItem|undefined)[];
     nextProcess: ProcessWithPages | undefined;
     isOpenPagination: boolean;
     onOpenChangePagination: () => void;

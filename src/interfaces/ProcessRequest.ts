@@ -1,3 +1,4 @@
+import { ProcessWithPages } from '../entities/Page';
 export interface IProcess {
     TEM: number;
     addedToReadyForFirstTime: boolean;
@@ -16,4 +17,9 @@ export interface IProcess {
     time_finished: number;
     wait_time: number;
     state: string;
+}
+
+export interface BufferItem {
+    process: ProcessWithPages;
+    size: number;
 }

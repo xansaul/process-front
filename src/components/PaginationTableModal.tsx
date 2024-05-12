@@ -68,21 +68,20 @@ const PaginationTable = ({ title }:Props) => {
         {
           buffer.map((item, index)=>{
 
+
             return (
+
               <div key={index} className="flex gap-5">
                 <span className="w-5">
                   {index}
                 </span>
                 <span>
                   5/{
-                    processesWithPages.map(process=>{
-                      process.processUuid===item? process.size%5 : 0
-                      return 0;
-                    })
+                    processesWithPages.map(process=>process.processUuid===item?.process.processUuid? item.size:0 )
                   }
                 </span>
                 <span className="w-auto">
-                  {item===""?"libre":item}
+                  {item === undefined ? "libre": item.process.processUuid }
                 </span>
               </div>
             );

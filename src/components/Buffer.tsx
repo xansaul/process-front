@@ -1,7 +1,9 @@
 
+import { BufferItem } from "../interfaces/ProcessRequest";
+
 
 interface Props {
-  buffer: string[];
+  buffer: (BufferItem|undefined)[];
 }
 
 export const Buffer = ({ buffer }: Props) => {
@@ -34,9 +36,9 @@ export const Buffer = ({ buffer }: Props) => {
               fontWeight: "bolder",
 
             }}
-            title={item}
+            title={item?.process.processUuid}
           >
-            {item}
+            {item?.process.processUuid}
           </span>
           <span
             style={{
