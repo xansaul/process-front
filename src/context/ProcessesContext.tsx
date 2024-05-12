@@ -28,6 +28,11 @@ export interface ContextProps {
     processesInBuffer: ProcessWithPages[];
     buffer: string[];
     nextProcess: ProcessWithPages | undefined;
+    isOpenPagination: boolean;
+    onOpenChangePagination: () => void;
+    onClosePagination: () => void;
+    onOpenPagination: () => void;
+    processesWithPages: ProcessWithPages[];
 }
 
 export const ProcessesContext = createContext({} as ContextProps);

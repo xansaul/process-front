@@ -24,7 +24,7 @@ export const ProcessesProvider: FC<Props> = ({children}) => {
         fetchNewProcess,
         calcBcpTable,
         setQuantum,
-        
+        isOpenPagination, onOpenPagination, onOpenChangePagination, onClosePagination
     } = useProcessProvider();
 
 
@@ -45,7 +45,8 @@ export const ProcessesProvider: FC<Props> = ({children}) => {
                 onClose,
                 fetchNewProcess,
                 calcBcpTable, 
-                setQuantum
+                setQuantum,
+                isOpenPagination, onOpenChangePagination, onClosePagination, onOpenPagination
             }}
         >
             {children}

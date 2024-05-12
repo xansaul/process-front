@@ -28,7 +28,7 @@ export const ProcessesReducer = (
 
             const buffer_with_os = [...state.buffer];
             buffer_with_os.fill("os", buffer_with_os.length - 5, buffer_with_os.length );
-
+            const processesWithPages: ProcessWithPages[] = [];
             const readyProcesses = action.payload.map(process => {
                 const numberOfEmpties = buffer_with_os.filter(element => element === "").length;
                 const newProcessPaginated = new ProcessWithPages(process.id);
@@ -43,7 +43,8 @@ export const ProcessesReducer = (
                             buffer_with_os[emptyIndex] = `${newProcessPaginated.processUuid}`;
                         }
                     }
-
+                    
+                    processesWithPages.push(newProcessPaginated);
                     process.state = 'ready';
                     return process;
                 }
@@ -70,7 +71,8 @@ export const ProcessesReducer = (
                 readyProcesses: filteredProcesses,
                 numberOfProcesses: action.payload.length,
                 processesInMemory: filteredProcesses.length,
-                nextProcess: nextProcessWithNumberOfPages
+                nextProcess: nextProcessWithNumberOfPages,
+                processesWithPages
             };
         }
 
@@ -110,6 +112,8 @@ export const ProcessesReducer = (
             const {runningProcess} = state;
             if (!runningProcess) return {...state};
 
+            const processesWithPages = state.processesWithPages.filter(process => process.processUuid !== runningProcess.id);
+
             const processesInBuffer = state.buffer;
             processesInBuffer.forEach((processUuid, index)=>{
                 if(runningProcess.id === processUuid){
@@ -129,12 +133,13 @@ export const ProcessesReducer = (
                 state: 'finished'
             };
 
+            
 
             return {
                 ...state,
                 runningProcess: undefined,
                 finishedProcesses: [...state.finishedProcesses, newProcessFinished],
-
+                processesWithPages
             };
         }
 
@@ -153,6 +158,7 @@ export const ProcessesReducer = (
                 if (emptyIndex !== -1) {
 
                     newBuffer[emptyIndex] = `${state.nextProcess.processUuid}`;
+                    state.processesWithPages.push(state.nextProcess)
                 }
             }
 
@@ -314,6 +320,7 @@ export const ProcessesReducer = (
 
             runningProcess.elapsdT += 1; 
             runningProcess.remaining_time_running -= 1; 
+            let processesWithPages = state.processesWithPages;
 
             if (runningProcess.elapsdT === runningProcess.TEM) {
                 const newFinishedsProcesses = [...state.finishedProcesses, runningProcess];
@@ -324,7 +331,9 @@ export const ProcessesReducer = (
                         processesInBuffer[index] = "";
                     }
                 });
-    
+               
+                processesWithPages = state.processesWithPages.filter(process => process.processUuid !== runningProcess.id);
+                
 
                 return {
                     ...state,
@@ -340,7 +349,7 @@ export const ProcessesReducer = (
                 ...state,
                 readyProcesses: newQueueProcess,
                 runningProcess: undefined,
-
+                processesWithPages
             }
         }
 

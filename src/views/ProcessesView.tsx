@@ -14,6 +14,7 @@ import {
 } from "../config/config-table.ts";
 import { useKeysControls } from "../hooks";
 import { Buffer } from "../components/Buffer.tsx";
+import { PaginationTableModal } from "../components/PaginationTableModal.tsx";
 
 export const ProcessesView = () => {
   const {
@@ -102,6 +103,7 @@ export const ProcessesView = () => {
         />
       </div>
       <ModalBCP />
+      <PaginationTableModal />
     </div>
   );
 };

@@ -19,6 +19,7 @@ export interface ProcessesState {
     processesInBuffer: ProcessWithPages[];
     buffer: string[];
     nextProcess: ProcessWithPages | undefined;
+    processesWithPages: ProcessWithPages[];
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
@@ -33,6 +34,7 @@ const PROCESSES_INITIAL_STATE: ProcessesState = {
     processesInBuffer: [],
     buffer: Array<string>(46).fill(""),
     nextProcess: undefined,
+    processesWithPages: []
 };
 
 export const useProcessProvider = () =>{
@@ -46,6 +48,7 @@ export const useProcessProvider = () =>{
     
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const {isOpen:isOpenPagination, onOpen:onOpenPagination, onOpenChange:onOpenChangePagination, onClose:onClosePagination} = useDisclosure();
     const { get } = useFetch<IProcess[]>();
     
     useEffect(() => {
@@ -187,6 +190,7 @@ export const useProcessProvider = () =>{
         onClose,
         fetchNewProcess,
         calcBcpTable,
-        setQuantum
+        setQuantum,
+        isOpenPagination, onOpenPagination, onOpenChangePagination, onClosePagination
     }
 }

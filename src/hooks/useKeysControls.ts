@@ -14,7 +14,9 @@ export const useKeysControls = () => {
         onClose,
         fetchNewProcess,
         processesInMemory,
-        calcBcpTable
+        calcBcpTable,
+        onClosePagination,
+        onOpenPagination
     } = useContext(ProcessesContext);
 
     useEffect(() => {
@@ -27,6 +29,7 @@ export const useKeysControls = () => {
                 }
                 case 'c': {
                     onClose();
+                    onClosePagination();
                     if ( processesInMemory === 0 ) return;
                     return playTimer();
                 }
@@ -46,6 +49,10 @@ export const useKeysControls = () => {
                 case 'n': {
                     if (globalCounter.is_paused) return;
                     return fetchNewProcess();
+                }
+                case 't': {
+                    pauseTimer();
+                    return onOpenPagination();
                 }
             }
 
