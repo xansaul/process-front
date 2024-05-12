@@ -47,20 +47,20 @@ export const useProcessProvider = () =>{
     const [rrTimeCounter, setRrTimeCounter] = useState<number>(0);
     
     const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
+
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const {isOpen:isOpenPagination, onOpen:onOpenPagination, onOpenChange:onOpenChangePagination, onClose:onClosePagination} = useDisclosure();
     const { get } = useFetch<IProcess[]>();
-    
-    useEffect(() => {
 
-        
+    useEffect(() => {
+        if ( globalCounter.is_paused ) return;
         if ( state.readyProcesses.length !== 0 || state.runningProcess ) {
             playTimer(); 
         }else {
             pauseTimer();
         }
         
-    }, [state.readyProcesses,state.runningProcess]);
+    }, [state.readyProcesses,state.runningProcess ]);
     
     useEffect(()=>{
         if (!state.runningProcess) return;
@@ -153,7 +153,7 @@ export const useProcessProvider = () =>{
 
         dispatch({type:"Processes - setProcesses", payload: processes});
         initGlobalCounter();
-
+        playTimer();
         return;
     }
     const blockProcess = () => {

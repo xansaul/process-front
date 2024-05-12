@@ -35,16 +35,18 @@ export const ProcessesReducer = (
 
                 if ( numberOfEmpties > newProcessPaginated.pagesNeeded ) {
                     
-                    for(let i = 0; i <= newProcessPaginated.pagesNeeded; i++){
+                    for(let i = 0; i < newProcessPaginated.pagesNeeded; i++){
 
                         const emptyIndex = buffer_with_os.indexOf(undefined);
+
                         if (emptyIndex !== -1) {
-                            if (i!=newProcessPaginated.pagesNeeded) {
+                            if ( i != newProcessPaginated.pagesNeeded-1) {
 
                                 buffer_with_os[emptyIndex] = {process:newProcessPaginated, size: 5};
-                            }else{
+                            }else{ 
+                                const sizeLastPage = newProcessPaginated.size % 5;
                                 
-                                buffer_with_os[emptyIndex] = {process:newProcessPaginated, size: newProcessPaginated.size%5};
+                                buffer_with_os[emptyIndex] = {process:newProcessPaginated, size: sizeLastPage === 0 ? 5 : sizeLastPage};
                             }
                         }
                     }
@@ -157,16 +159,18 @@ export const ProcessesReducer = (
             const numberOfEmpties = state.buffer.filter(element => element === undefined).length;
             if ( numberOfEmpties < state.nextProcess.pagesNeeded ) return {...state};
             const newBuffer = [...state.buffer];
-            for(let i = 0; i <= state.nextProcess.pagesNeeded; i++){
+            for(let i = 0; i < state.nextProcess.pagesNeeded; i++){
 
                 const emptyIndex = newBuffer.indexOf(undefined);
                 if (emptyIndex !== -1) {
-                    if (i!=state.nextProcess.pagesNeeded) {
+                    if (i!=state.nextProcess.pagesNeeded-1) {
 
                         newBuffer[emptyIndex] = {process:state.nextProcess, size: 5};
                     }else{
-                        
-                        newBuffer[emptyIndex] = {process:state.nextProcess, size: state.nextProcess.size%5};
+                        const sizeLastPage = state.nextProcess.size % 5;
+                                
+
+                        newBuffer[emptyIndex] = {process:state.nextProcess, size: sizeLastPage === 0 ? 5 : sizeLastPage};
                     }
                 }
             }

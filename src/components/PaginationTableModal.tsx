@@ -57,7 +57,7 @@ interface Props {
 
 const PaginationTable = ({ title }:Props) => {
 
-  const { processesWithPages, buffer } = useContext(ProcessesContext);
+  const { buffer } = useContext(ProcessesContext);
 
 
   return (
@@ -76,9 +76,7 @@ const PaginationTable = ({ title }:Props) => {
                   {index}
                 </span>
                 <span>
-                  5/{
-                    processesWithPages.map(process=>process.processUuid===item?.process.processUuid? item.size:0 )
-                  }
+                  {item?item?.size:0}/5
                 </span>
                 <span className="w-auto">
                   {item === undefined ? "libre": item.process.processUuid }
