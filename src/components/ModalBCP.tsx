@@ -12,7 +12,8 @@ export const ModalBCP = () => {
         finishedProcesses,
         blockedProcesses,
         readyProcesses,
-        runningProcess } = useContext(ProcessesContext);
+        runningProcess,
+     } = useContext(ProcessesContext);
 
     const allProcesses = [
         ...readyProcesses,

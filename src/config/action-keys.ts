@@ -25,5 +25,9 @@ export const actionKeys = [
         action: "BCP",
         key: "B"
     },
+    {
+        action: "Pages",
+        key: "T"
+    },
 
 ]

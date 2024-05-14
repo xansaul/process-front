@@ -167,6 +167,10 @@ export const BCPTable = [
     {
         key: "remaining_time_blocked",
         label: "REMAINING TIME BLOCKED"
+    },
+    {
+        key: "size",
+        label: "SIZE"
     }
 ];
 

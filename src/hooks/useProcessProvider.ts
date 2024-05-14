@@ -1,196 +1,209 @@
 import { useEffect, useReducer, useState } from "react";
-import {ProcessesReducer} from "../context";
-import {useTimer} from "./useTimer.ts";
-import {evaluate} from "mathjs";
-import {BufferItem, IProcess} from "../interfaces/ProcessRequest.ts";
-import {envs} from "../config";
-import {useDisclosure} from "@nextui-org/react";
-import {useFetch} from "./useFetch.ts";
+import { ProcessesReducer } from "../context";
+import { useTimer } from "./useTimer.ts";
+import { evaluate } from "mathjs";
+import { BufferItem, IProcess } from "../interfaces/ProcessRequest.ts";
+import { envs } from "../config";
+import { useDisclosure } from "@nextui-org/react";
+import { useFetch } from "./useFetch.ts";
 import { ProcessWithPages } from "../entities/Page.ts";
 export interface ProcessesState {
-    processes: IProcess[];
-    blockedProcesses: IProcess[];
-    readyProcesses: IProcess[];
-    finishedProcesses: IProcess[];
-    runningProcess: IProcess | undefined;
-    numberOfProcesses: number;
-    isLoadingProcesses: boolean;
-    processesInMemory: number;
-    processesInBuffer: ProcessWithPages[];
-    buffer: (BufferItem|undefined)[];
-    nextProcess: ProcessWithPages | undefined;
-    processesWithPages: ProcessWithPages[];
+  processes: IProcess[];
+  blockedProcesses: IProcess[];
+  readyProcesses: IProcess[];
+  finishedProcesses: IProcess[];
+  runningProcess: IProcess | undefined;
+  numberOfProcesses: number;
+  isLoadingProcesses: boolean;
+  processesInMemory: number;
+  processesInBuffer: ProcessWithPages[];
+  buffer: (BufferItem | undefined)[];
+  nextProcess: ProcessWithPages | undefined;
+  processesWithPages: ProcessWithPages[];
 }
 
 const PROCESSES_INITIAL_STATE: ProcessesState = {
-    processes: [],
-    blockedProcesses: [],
-    readyProcesses: [],
-    finishedProcesses: [],
-    runningProcess: undefined,
-    numberOfProcesses: 0,
-    isLoadingProcesses: false,
-    processesInMemory: 0,
-    processesInBuffer: [],
-    buffer: Array<(BufferItem|undefined)>(46).fill(undefined),
-    nextProcess: undefined,
-    processesWithPages: []
+  processes: [],
+  blockedProcesses: [],
+  readyProcesses: [],
+  finishedProcesses: [],
+  runningProcess: undefined,
+  numberOfProcesses: 0,
+  isLoadingProcesses: false,
+  processesInMemory: 0,
+  processesInBuffer: [],
+  buffer: Array<BufferItem | undefined>(46).fill(undefined),
+  nextProcess: undefined,
+  processesWithPages: [],
 };
 
-export const useProcessProvider = () =>{
-    const [state, dispatch] = useReducer(
-        ProcessesReducer,
-        PROCESSES_INITIAL_STATE
-    );
+export const useProcessProvider = () => {
+  const [state, dispatch] = useReducer(
+    ProcessesReducer,
+    PROCESSES_INITIAL_STATE
+  );
 
-    const [quantum, setQuantum] = useState(3);
-    const [rrTimeCounter, setRrTimeCounter] = useState<number>(0);
-    
-    const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(envs.TIMER_VELOCITY);
+  const [quantum, setQuantum] = useState(3);
+  const [rrTimeCounter, setRrTimeCounter] = useState<number>(0);
 
-    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
-    const {isOpen:isOpenPagination, onOpen:onOpenPagination, onOpenChange:onOpenChangePagination, onClose:onClosePagination} = useDisclosure();
-    const { get } = useFetch<IProcess[]>();
+  const [globalCounter, initGlobalCounter, pauseTimer, playTimer] = useTimer(
+    envs.TIMER_VELOCITY
+  );
 
-    useEffect(() => {
-        if ( globalCounter.is_paused ) return;
-        if ( state.readyProcesses.length !== 0 || state.runningProcess ) {
-            playTimer(); 
-        }else {
-            pauseTimer();
-        }
-        
-    }, [state.readyProcesses,state.runningProcess ]);
-    
-    useEffect(()=>{
-        if (!state.runningProcess) return;
-        setRrTimeCounter(prev => prev+1);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenPagination,
+    onOpen: onOpenPagination,
+    onOpenChange: onOpenChangePagination,
+    onClose: onClosePagination,
+  } = useDisclosure();
+  const { get } = useFetch<IProcess[]>();
 
-        if ( rrTimeCounter === Number(quantum)-1 ){
-            dispatch({type: 'Processes - rr'});
-            setRrTimeCounter(0);
+  useEffect(() => {
+    if (globalCounter.is_paused) return;
+    if (
+      state.readyProcesses.length !== 0 ||
+      state.runningProcess ||
+      state.blockedProcesses.length !== 0
+    ) {
+      playTimer();
+    } else {
+      pauseTimer();
+    }
+  }, [state.readyProcesses, state.runningProcess]);
 
-            return;
-        }
-        dispatch({ type: 'Processes - ++timeELAPSEDTimeRunningProcess' });
-        dispatch({type: 'Processes - --time_remainingRunningProcess'});
-        
-        
+  useEffect(() => {
+    if (!state.runningProcess) return;
+    setRrTimeCounter((prev) => prev + 1);
 
-    },[ globalCounter.timer ]);
+    if (rrTimeCounter === Number(quantum) - 1) {
+      dispatch({ type: "Processes - rr" });
+      setRrTimeCounter(0);
 
-    useEffect(()=>{
+      return;
+    }
+    dispatch({ type: "Processes - ++timeELAPSEDTimeRunningProcess" });
+    dispatch({ type: "Processes - --time_remainingRunningProcess" });
+  }, [globalCounter.timer]);
 
-        if(!state.runningProcess) return;
+  useEffect(() => {
+    if (!state.runningProcess) return;
 
-        if ( state.runningProcess.elapsdT === state.runningProcess.TEM ){
-            const result = evaluate(state.runningProcess.operation);
-            dispatch({
-                type: 'Processes - moveRunningProcess2Finished',
-                payload: {
-                    timeFinished :globalCounter.timer,
-                    resultOperation: result.toFixed(2)
-                }
-            });
-        }
+    if (state.runningProcess.elapsdT === state.runningProcess.TEM) {
+      const result = evaluate(state.runningProcess.operation);
+      dispatch({
+        type: "Processes - moveRunningProcess2Finished",
+        payload: {
+          timeFinished: globalCounter.timer,
+          resultOperation: result.toFixed(2),
+        },
+      });
+    }
+  }, [state.runningProcess?.elapsdT]);
 
-    },[state.runningProcess?.elapsdT]);
+  useEffect(() => {
+    if (!state.runningProcess) return;
 
-    useEffect(()=>{
+    if (state.runningProcess.elapsdT === state.runningProcess.TEM) {
+      const result = evaluate(state.runningProcess.operation);
+      dispatch({
+        type: "Processes - moveRunningProcess2Finished",
+        payload: {
+          timeFinished: globalCounter.timer,
+          resultOperation: result.toFixed(2),
+        },
+      });
+      setRrTimeCounter(0);
+    }
+  }, [state.runningProcess?.elapsdT]);
 
-        if(!state.runningProcess) return;
-
-        if ( state.runningProcess.elapsdT === state.runningProcess.TEM ){
-            const result = evaluate(state.runningProcess.operation);
-            dispatch({
-                type: 'Processes - moveRunningProcess2Finished',
-                payload: {
-                    timeFinished :globalCounter.timer,
-                    resultOperation: result.toFixed(2)
-                }
-            });
-            setRrTimeCounter(0);
-        }
-    },[state.runningProcess?.elapsdT]);
-
-
-    useEffect(() => {
-        dispatch({ type: 'Processes - ++blockedProcesses' });
-        state.blockedProcesses.forEach(process => {
-            if (process.elapsed_time_blocked === envs.SECONDS_BLOCKED_PROCESS) {
-                dispatch({ type: 'Processes - blocked2ReadyProcess', payload: process.id });
-            }
-        });
-    }, [globalCounter.timer]);
-
-    useEffect(() => {
-
-
-        dispatch({ type: 'Processes - addNewReadyProcess', payload: globalCounter.timer })
-
-    }, [state.processes, state.readyProcesses]);
-
-    useEffect(() => {
-        if ( !state.runningProcess ){
-            dispatch({ type: 'Processes - setNewRunningProcess', payload: globalCounter.timer });
-        }
-    }, [state.readyProcesses.length, state.runningProcess ]);
-
-    const finishProcessWithError = (timeFinished:number) => {
-        if ( !state.runningProcess ) return;
-
+  useEffect(() => {
+    dispatch({ type: "Processes - ++blockedProcesses" });
+    state.blockedProcesses.forEach((process) => {
+      if (process.elapsed_time_blocked === envs.SECONDS_BLOCKED_PROCESS) {
         dispatch({
-            type: 'Processes - moveRunningProcess2Finished',
-            payload: {
-                timeFinished : timeFinished,
-                resultOperation: "error"
-            }
+          type: "Processes - blocked2ReadyProcess",
+          payload: process.id,
         });
-        setRrTimeCounter(0);
-    }
+      }
+    });
+  }, [globalCounter.timer]);
 
-    const setProcesses = (processes: IProcess[]) => {
+  useEffect(() => {
+    dispatch({
+      type: "Processes - addNewReadyProcess",
+      payload: globalCounter.timer,
+    });
+  }, [state.processes, state.readyProcesses]);
 
-        dispatch({type:"Processes - setProcesses", payload: processes});
-        initGlobalCounter();
-        playTimer();
-        return;
+  useEffect(() => {
+    if (!state.runningProcess) {
+      dispatch({
+        type: "Processes - setNewRunningProcess",
+        payload: globalCounter.timer,
+      });
     }
-    const blockProcess = () => {
-        dispatch({ type:'Processes - onProcessBlock' });
-    }
+  }, [state.readyProcesses.length, state.runningProcess]);
 
-    const toggleIsLoading = () =>{
-        dispatch({ type: 'Processes - toggleIsLoadingProcesses' });
-    }
+  const finishProcessWithError = (timeFinished: number) => {
+    if (!state.runningProcess) return;
 
-    const fetchNewProcess = async() =>{
+    dispatch({
+      type: "Processes - moveRunningProcess2Finished",
+      payload: {
+        timeFinished: timeFinished,
+        resultOperation: "error",
+      },
+    });
+    setRrTimeCounter(0);
+  };
 
-        const newProcess = await get(`${ envs.API_URL}?noProcesses=1`);
-        if ( !newProcess ) throw 'Error fetching process';
-        dispatch({ type:'Processes - onFetchNewProcess', payload: newProcess[0] });
-    }
+  const setProcesses = (processes: IProcess[]) => {
+    dispatch({ type: "Processes - setProcesses", payload: processes });
+    initGlobalCounter();
+    playTimer();
+    return;
+  };
+  const blockProcess = () => {
+    dispatch({ type: "Processes - onProcessBlock" });
+  };
 
-    const calcBcpTable = () => {
-        dispatch({ type: 'Processes - calcWaitAndServiceTime', payload: globalCounter.timer });
-    }
+  const toggleIsLoading = () => {
+    dispatch({ type: "Processes - toggleIsLoadingProcesses" });
+  };
 
-    return {
-        state,
-        setProcesses,
-        finishProcessWithError,
-        globalCounter,
-        pauseTimer,
-        playTimer,
-        blockProcess,
-        toggleIsLoading,
-        isOpen,
-        onOpen,
-        onOpenChange,
-        onClose,
-        fetchNewProcess,
-        calcBcpTable,
-        setQuantum,
-        isOpenPagination, onOpenPagination, onOpenChangePagination, onClosePagination
-    }
-}
+  const fetchNewProcess = async () => {
+    const newProcess = await get(`${envs.API_URL}?noProcesses=1`);
+    if (!newProcess) throw "Error fetching process";
+    dispatch({ type: "Processes - onFetchNewProcess", payload: newProcess[0] });
+  };
+
+  const calcBcpTable = () => {
+    dispatch({
+      type: "Processes - calcWaitAndServiceTime",
+      payload: globalCounter.timer,
+    });
+  };
+
+  return {
+    state,
+    setProcesses,
+    finishProcessWithError,
+    globalCounter,
+    pauseTimer,
+    playTimer,
+    blockProcess,
+    toggleIsLoading,
+    isOpen,
+    onOpen,
+    onOpenChange,
+    onClose,
+    fetchNewProcess,
+    calcBcpTable,
+    setQuantum,
+    isOpenPagination,
+    onOpenPagination,
+    onOpenChangePagination,
+    onClosePagination,
+  };
+};

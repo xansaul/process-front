@@ -15,6 +15,7 @@ type ProcessesActionType = { type: "Processes - setProcesses", payload: IProcess
     | { type: 'Processes - toggleIsLoadingProcesses' }
     | { type: 'Processes - calcWaitAndServiceTime', payload: number }
     | { type: 'Processes - onFetchNewProcess', payload: IProcess }
+    | { type: 'Processes - setnextprocess' }
     | { type: 'Processes - rr' };
 
 export const ProcessesReducer = (
@@ -89,7 +90,7 @@ export const ProcessesReducer = (
             if (!newRunningProcess) return {...state};
 
             if (!newRunningProcess.addedToRunningProcessForFirstTime) {
-                newRunningProcess.response_time = action.payload;
+                newRunningProcess.response_time = action.payload - newRunningProcess.initial_time;
                 newRunningProcess.addedToRunningProcessForFirstTime = true;
             }
 
@@ -122,6 +123,7 @@ export const ProcessesReducer = (
             const processesWithPages = state.processesWithPages.filter(process => process.processUuid !== runningProcess.id);
 
             const processesInBuffer = state.buffer;
+
             processesInBuffer.forEach((processWithPages, index)=>{
                 if(runningProcess.id === processWithPages?.process.processUuid){
                     processesInBuffer[index] = undefined;
@@ -199,6 +201,18 @@ export const ProcessesReducer = (
             }
         }
 
+        case 'Processes - setnextprocess':{
+            const [nextProcess] = state.processes;
+            let nextProcessWithNumberOfPages = undefined;
+            if ( nextProcess ) {
+                nextProcessWithNumberOfPages = new ProcessWithPages(nextProcess.id);
+            }
+            return {
+                ...state,
+                nextProcess: nextProcessWithNumberOfPages
+            }
+        }
+
         case 'Processes - onProcessBlock': {
             if (!state.runningProcess) return {...state};
             const newBlockedProcess = {...state.runningProcess} as IProcess;
@@ -263,10 +277,20 @@ export const ProcessesReducer = (
         }
 
         case "Processes - onFetchNewProcess": {
+
+            const [nextProcess] = state.processes;
+            let nextProcessWithNumberOfPages = undefined;
+            if ( nextProcess ) {
+                nextProcessWithNumberOfPages = new ProcessWithPages(nextProcess.id);
+            }else {
+                nextProcessWithNumberOfPages = new ProcessWithPages(action.payload.id);
+            }
+            
             return {
                 ...state,
                 processes: [...state.processes, action.payload],
-                numberOfProcesses: state.numberOfProcesses + 1
+                numberOfProcesses: state.numberOfProcesses + 1,
+                nextProcess: nextProcessWithNumberOfPages
             }
         }
 
@@ -334,10 +358,11 @@ export const ProcessesReducer = (
             runningProcess.elapsdT += 1; 
             runningProcess.remaining_time_running -= 1; 
             let processesWithPages = state.processesWithPages;
+            runningProcess.state="ready"
 
             if (runningProcess.elapsdT === runningProcess.TEM) {
                 const newFinishedsProcesses = [...state.finishedProcesses, runningProcess];
-
+                runningProcess.state = 'finished'
                 const processesInBuffer = state.buffer;
                 processesInBuffer.forEach((processWithPages, index)=>{
                     if(runningProcess.id === processWithPages?.process.processUuid){
